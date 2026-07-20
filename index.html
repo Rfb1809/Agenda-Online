@@ -21,9 +21,14 @@
         /* Formulários e Inputs */
         .form-group { margin-bottom: 15px; }
         label { display: block; font-size: 12px; font-weight: bold; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px; }
-        input, select, textarea { width: 100%; padding: 10px; background: #0f172a; border: 1px solid #475569; border-radius: 8px; color: #fff; font-size: 14px; outline: none; }
+        input[type="text"], input[type="password"], input[type="date"], input[type="time"], select, textarea { width: 100%; padding: 10px; background: #0f172a; border: 1px solid #475569; border-radius: 8px; color: #fff; font-size: 14px; outline: none; }
         input:focus, select:focus, textarea:focus { border-color: #38bdf8; }
         
+        /* Checkboxes Dias da Semana */
+        .checkbox-days { display: flex; flex-wrap: wrap; gap: 10px; background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid #475569; }
+        .checkbox-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #f8fafc; cursor: pointer; }
+        .checkbox-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: #38bdf8; cursor: pointer; }
+
         /* Botões */
         button { border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 14px; }
         .btn-primary { background: #0284c7; color: white; width: 100%; }
@@ -61,7 +66,7 @@
         .event-user { font-size: 10px; background: #334155; color: #f8fafc; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 6px; }
         
         /* Layout Admin */
-        .admin-form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+        .admin-form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
         
         .hidden { display: none !important; }
     </style>
@@ -119,33 +124,43 @@
                 </form>
             </div>
 
-            <!-- Atribuir Destino / Tarefa -->
+            <!-- Atribuir Destino / Tarefa com Múltiplos Usuários e Dias -->
             <div class="card">
-                <h3>📌 Agendar Destino para Usuário</h3>
+                <h3>📌 Agendar Função/Destino</h3>
                 <form onsubmit="agendarTarefa(event)">
                     <div class="admin-form-row">
                         <div class="form-group">
-                            <label>Selecionar Usuário</label>
-                            <select id="scheduleUserSelect" required>
+                            <label>Usuário 1 *</label>
+                            <select id="scheduleUserSelect1" class="user-select-box" required>
                                 <option value="">Carregando...</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Data Específica</label>
-                            <input type="date" id="scheduleDate" required onchange="sincronizarDiaDaSemana(this.value)">
+                            <label>Usuário 2 (Opcional)</label>
+                            <select id="scheduleUserSelect2" class="user-select-box">
+                                <option value="">Nenhum</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label>Horário</label>
                             <input type="time" id="scheduleTime" required>
                         </div>
                         <div class="form-group">
-                            <label>Local / Destino (Aonde ir)</label>
-                            <input type="text" id="scheduleLocation" placeholder="Ex: Cliente XYZ / Unidade Sul" required>
+                            <label>Local / Destino (Função)</label>
+                            <input type="text" id="scheduleLocation" placeholder="Ex: Cliente XYZ / Suporte" required>
                         </div>
                     </div>
+
+                    <div class="form-group">
+                        <label>Selecione os Dias da Semana para esta Função *</label>
+                        <div class="checkbox-days" id="checkboxDaysContainer">
+                            <!-- Os checkboxes serão injetados via JS com as datas da semana visível -->
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label>Instruções / Descrição</label>
-                        <textarea id="scheduleDesc" rows="2" placeholder="Ex: Realizar manutenção no servidor local."></textarea>
+                        <textarea id="scheduleDesc" rows="2" placeholder="Ex: Realizar verificação e manutenção nos equipamentos."></textarea>
                     </div>
                     <button type="submit" class="btn-success">Lançar na Agenda</button>
                 </form>
@@ -183,7 +198,7 @@
 
     let agendamentos = JSON.parse(localStorage.getItem('app_agendamentos')) || [];
     let usuarioLogado = null;
-    let datasDaSemanaAtual = []; // Guarda objetos com data ISO (YYYY-MM-DD) da semana visível
+    let datasDaSemanaAtual = [];
 
     // --- AUTENTICAÇÃO E LOGIN ---
     function realizarLogin(e) {
@@ -226,10 +241,8 @@
             document.getElementById('adminBadge').classList.add('hidden');
         }
 
-        // Define a data inicial como hoje
         const hojeISO = new Date().toISOString().split('T')[0];
         document.getElementById('weekPickerDate').value = hojeISO;
-        document.getElementById('scheduleDate').value = hojeISO;
         
         atualizarSemanaPorData(hojeISO);
     }
@@ -238,11 +251,9 @@
     function atualizarSemanaPorData(dataString) {
         if (!dataString) return;
 
-        // Trata fuso horário abrindo a data em UTC
         const partes = dataString.split('-');
         const data = new Date(Date.UTC(partes[0], partes[1] - 1, partes[2]));
 
-        // Descobre o dia da semana (0 = Domingo, 1 = Segunda, ..., 6 = Sábado)
         let diaDaSemana = data.getUTCDay();
         let diferencaParaSegunda = diaDaSemana === 0 ? -6 : 1 - diaDaSemana;
 
@@ -263,12 +274,28 @@
             });
         }
 
-        // Atualiza rótulo do intervalo da semana
         const inicioSemana = datasDaSemanaAtual[0].dataFormatada;
         const fimSemana = datasDaSemanaAtual[6].dataFormatada;
         document.getElementById('weekRangeLabel').innerText = `Semana de ${inicioSemana} até ${fimSemana}`;
 
+        renderizarCheckboxesDias();
         renderizarAgenda();
+    }
+
+    function renderizarCheckboxesDias() {
+        const container = document.getElementById('checkboxDaysContainer');
+        if (!container) return;
+        container.innerHTML = '';
+
+        datasDaSemanaAtual.forEach(diaInfo => {
+            const label = document.createElement('label');
+            label.className = 'checkbox-item';
+            label.innerHTML = `
+                <input type="checkbox" name="selectedDay" value="${diaInfo.dataISO}">
+                ${diaInfo.nomeDia.split('-')[0]} (${diaInfo.dataFormatada})
+            `;
+            container.appendChild(label);
+        });
     }
 
     // --- FUNÇÕES DO ADMINISTRADOR ---
@@ -292,52 +319,78 @@
     }
 
     function atualizarSelectUsuarios() {
-        const select = document.getElementById('scheduleUserSelect');
-        select.innerHTML = '<option value="">Selecione um usuário...</option>';
+        const selects = document.querySelectorAll('.user-select-box');
         
-        usuarios.forEach(user => {
-            const option = document.createElement('option');
-            option.value = user.user;
-            option.innerText = user.user + (user.role === 'admin' ? ' (Admin)' : '');
-            select.appendChild(option);
+        selects.forEach((select, index) => {
+            select.innerHTML = index === 0 
+                ? '<option value="">Selecione o Usuário 1...</option>' 
+                : '<option value="">Nenhum (Apenas 1 usuário)</option>';
+            
+            usuarios.forEach(user => {
+                const option = document.createElement('option');
+                option.value = user.user;
+                option.innerText = user.user + (user.role === 'admin' ? ' (Admin)' : '');
+                select.appendChild(option);
+            });
         });
     }
 
     function agendarTarefa(e) {
         e.preventDefault();
-        const usuarioDestino = document.getElementById('scheduleUserSelect').value;
-        const dataAgenda = document.getElementById('scheduleDate').value;
+        const u1 = document.getElementById('scheduleUserSelect1').value;
+        const u2 = document.getElementById('scheduleUserSelect2').value;
         const hora = document.getElementById('scheduleTime').value;
         const local = document.getElementById('scheduleLocation').value.trim();
         const desc = document.getElementById('scheduleDesc').value.trim();
 
-        if (!usuarioDestino) {
-            alert('Por favor, selecione um usuário.');
+        // Pega todos os checkboxes marcados
+        const checkboxesMarcados = document.querySelectorAll('input[name="selectedDay"]:checked');
+        const diasSelecionados = Array.from(checkboxesMarcados).map(cb => cb.value);
+
+        if (!u1) {
+            alert('Por favor, selecione pelo menos o Usuário 1.');
             return;
         }
 
-        const novoEvento = {
-            id: Date.now(),
-            usuario: usuarioDestino,
-            data: dataAgenda,
-            hora: hora,
-            local: local,
-            desc: desc
-        };
+        if (diasSelecionados.length === 0) {
+            alert('Por favor, marque pelo menos um dia da semana!');
+            return;
+        }
 
-        agendamentos.push(novoEvento);
+        // Monta a lista de usuários selecionados
+        const listaUsuarios = [u1];
+        if (u2 && u2 !== u1) {
+            listaUsuarios.push(u2);
+        }
+
+        let totalLancamentos = 0;
+
+        // Itera sobre todos os dias e usuários para gravar individualmente
+        diasSelecionados.forEach(dataIso => {
+            listaUsuarios.forEach(user => {
+                const novoEvento = {
+                    id: Date.now() + Math.random(),
+                    usuario: user,
+                    data: dataIso,
+                    hora: hora,
+                    local: local,
+                    desc: desc
+                };
+                agendamentos.push(novoEvento);
+                totalLancamentos++;
+            });
+        });
+
         salvarDados();
-        alert('📌 Agendamento salvo com sucesso!');
+        alert(`📌 ${totalLancamentos} agendamento(s) salvo(s) com sucesso!`);
 
         document.getElementById('scheduleLocation').value = '';
         document.getElementById('scheduleDesc').value = '';
-        
-        // Se a data agendada for fora da semana visível, ajusta para visualização
-        atualizarSemanaPorData(dataAgenda);
-        document.getElementById('weekPickerDate').value = dataAgenda;
+        document.querySelectorAll('input[name="selectedDay"]').forEach(cb => cb.checked = false);
+
+        renderizarAgenda();
     }
 
-    // COPIAR E COLAR PARA OUTROS DIAS
     function duplicarEvento(id) {
         const eventoOriginal = agendamentos.find(ev => ev.id === id);
         if (!eventoOriginal) return;
@@ -347,7 +400,7 @@
         if (novaData && novaData.trim() !== '') {
             const eventoDuplicado = {
                 ...eventoOriginal,
-                id: Date.now(),
+                id: Date.now() + Math.random(),
                 data: novaData.trim()
             };
 
@@ -381,7 +434,6 @@
 
             let htmlEventos = '';
 
-            // Filtra agendamentos pela data ISO exata e permissões do usuário
             const eventosDoDia = agendamentos.filter(ev => {
                 const mesmaData = ev.data === diaInfo.dataISO;
                 return isAdmin ? mesmaData : (mesmaData && ev.usuario.toLowerCase() === usuarioLogado.user.toLowerCase());
