@@ -1,67 +1,351 @@
-<!-- Estilos específicos da Agenda -->
-<style>
-    .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px; }
-    @media(min-width: 768px) { .dashboard-grid { grid-template-columns: 1fr 1fr; } }
-    
-    .card { background: #1e293b; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); margin-bottom: 20px; border: 1px solid #334155; color: #f8fafc; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px; }
-    .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
-    label { font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; }
-    input[type="text"], input[type="date"], textarea { padding: 10px; font-size: 15px; background-color: #0f172a; color: #fff; border: 1px solid #475569; border-radius: 8px; width: 100%; outline: none; }
-    
-    .todo-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #334155; background: #0f172a; margin-bottom: 8px; border-radius: 6px; border-left: 4px solid #94a3b8; }
-    .todo-item.executado { border-left-color: #10b981; text-decoration: line-through; opacity: 0.7; }
-    .todo-item.pendente { border-left-color: #f59e0b; }
-    .todo-item-info h4 { font-size: 14px; color: #f8fafc; margin: 0; }
-    .todo-item-info p { font-size: 12px; color: #94a3b8; margin: 4px 0 0 0; }
-    .todo-actions { display: flex; gap: 8px; }
-    
-    .btn-success { background-color: #10b981; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
-    .btn-danger { background-color: #dc2626; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
-    .btn-action { width: auto; padding: 6px 12px; font-size: 12px; font-weight: bold; }
-</style>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda Semanal Corporativa</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #0f172a; color: #f8fafc; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        
+        .container { width: 100%; max-width: 1000px; }
+        
+        /* Card Base */
+        .card { background: #1e293b; padding: 25px; border-radius: 12px; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin-bottom: 20px; }
+        
+        /* Login */
+        #login-screen { max-width: 400px; margin: 0 auto; }
+        h2 { color: #38bdf8; margin-bottom: 20px; text-align: center; font-size: 22px; }
+        h3 { color: #f1f5f9; margin-bottom: 15px; font-size: 18px; border-bottom: 2px solid #334155; padding-bottom: 8px; }
+        
+        /* Formulários e Inputs */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 12px; font-weight: bold; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px; }
+        input, select, textarea { width: 100%; padding: 10px; background: #0f172a; border: 1px solid #475569; border-radius: 8px; color: #fff; font-size: 14px; outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: #38bdf8; }
+        
+        /* Botões */
+        button { border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 14px; }
+        .btn-primary { background: #0284c7; color: white; width: 100%; }
+        .btn-primary:hover { background: #0369a1; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-success:hover { background: #059669; }
+        .btn-danger { background: #ef4444; color: white; padding: 5px 10px; font-size: 12px; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-logout { background: #334155; color: #f8fafc; }
+        .btn-logout:hover { background: #475569; }
+        
+        /* Topo */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .user-badge { background: #0284c7; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        
+        /* Grid da Agenda Semanal */
+        .agenda-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-top: 20px; }
+        .day-column { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; min-height: 250px; }
+        .day-title { color: #38bdf8; font-weight: bold; text-align: center; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px dashed #334155; }
+        
+        /* Card de Evento/Tarefa */
+        .event-card { background: #1e293b; border-left: 4px solid #38bdf8; border-radius: 6px; padding: 10px; margin-bottom: 10px; font-size: 13px; position: relative; }
+        .event-card.admin-view { border-left-color: #f59e0b; }
+        .event-time { font-weight: bold; color: #e2e8f0; margin-bottom: 4px; display: flex; justify-content: space-between; }
+        .event-location { color: #38bdf8; font-weight: bold; margin-bottom: 4px; display: block; }
+        .event-desc { color: #94a3b8; font-size: 12px; word-break: break-word; }
+        .event-user { font-size: 10px; background: #334155; color: #f8fafc; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 6px; }
+        
+        /* Layout Admin */
+        .admin-form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+        
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
 
-<!-- Bloco da Agenda -->
-<div id="sub-agenda">
-    <div class="dashboard-grid">
-        <div>
-            <!-- Formulário para Criar Atividade -->
-            <div class="card" style="background-color: #111827;">
-                <h2>📝 Nova Atividade / Serviço</h2>
-                <form id="formAgenda" onsubmit="adicionarTarefa(event)">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Data da Atividade</label>
-                            <input type="date" id="agendaData" required onchange="renderizarAgenda()">
-                        </div>
-                        <div class="form-group">
-                            <label>Título do Serviço</label>
-                            <input type="text" id="agendaTitulo" placeholder="Ex: Passar cabeamento setor A" required>
-                        </div>
+<div class="container">
+
+    <!-- TELA DE LOGIN -->
+    <div id="login-screen" class="card">
+        <h2>🔒 Agenda - Acesso</h2>
+        <form onsubmit="realizarLogin(event)">
+            <div class="form-group">
+                <label>Usuário</label>
+                <input type="text" id="loginUser" required placeholder="Digite seu usuário">
+            </div>
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" id="loginPass" required placeholder="Digite sua senha">
+            </div>
+            <button type="submit" class="btn-primary">Entrar no Sistema</button>
+        </form>
+    </div>
+
+    <!-- TELA PRINCIPAL (PAINEL DE CONTROLE) -->
+    <div id="main-screen" class="hidden">
+        
+        <!-- CABEÇALHO -->
+        <div class="header card" style="margin-bottom: 15px; padding: 15px 25px;">
+            <div>
+                <span style="font-size: 18px; font-weight: bold;">👋 Olá, <span id="displayUserName" style="color: #38bdf8;"></span></span>
+                <span id="adminBadge" class="user-badge hidden" style="margin-left: 10px; background: #f59e0b;">ADMIN</span>
+            </div>
+            <button onclick="logout()" class="btn-logout">Sair</button>
+        </div>
+
+        <!-- PAINEL EXCLUSIVO DO ADMINISTRADOR -->
+        <div id="admin-panel" class="hidden">
+            
+            <!-- Cadastrar Novo Usuário -->
+            <div class="card">
+                <h3>👤 Cadastrar Novo Usuário</h3>
+                <form onsubmit="cadastrarUsuario(event)" class="admin-form-row">
+                    <div class="form-group">
+                        <label>Nome / Usuário</label>
+                        <input type="text" id="newUsername" placeholder="Ex: joao" required>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group" style="grid-column: span 2;">
-                            <label>Detalhamento da Tarefa / Notas</label>
-                            <textarea id="agendaDescricao" placeholder="Escreva observações adicionais ou notas para o dia..." rows="2"></textarea>
-                        </div>
+                    <div class="form-group">
+                        <label>Senha</label>
+                        <input type="password" id="newPassword" placeholder="Senha" required>
                     </div>
-                    <button type="submit" class="btn-success" style="font-weight: bold;">Adicionar à Agenda</button>
+                    <div class="form-group" style="display: flex; align-items: flex-end;">
+                        <button type="submit" class="btn-success" style="width: 100%;">+ Criar Usuário</button>
+                    </div>
                 </form>
             </div>
 
-            <!-- Lista de Serviços Agendados -->
-            <div class="card" style="background-color: #111827;">
-                <h2>📋 Serviços Agendados para o Dia <span id="agendaDataSelecionada" style="color:#38bdf8"></span></h2>
-                <div id="listaTarefas" style="margin-top: 15px;"></div>
+            <!-- Atribuir Destino / Tarefa -->
+            <div class="card">
+                <h3>📌 Agendar Destino para Usuário</h3>
+                <form onsubmit="agendarTarefa(event)">
+                    <div class="admin-form-row">
+                        <div class="form-group">
+                            <label>Selecionar Usuário</label>
+                            <select id="scheduleUserSelect" required>
+                                <option value="">Carregando...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Dia da Semana</label>
+                            <select id="scheduleDaySelect" required>
+                                <option value="Segunda">Segunda-feira</option>
+                                <option value="Terça">Terça-feira</option>
+                                <option value="Quarta">Quarta-feira</option>
+                                <option value="Quinta">Quinta-feira</option>
+                                <option value="Sexta">Sexta-feira</option>
+                                <option value="Sábado">Sábado</option>
+                                <option value="Domingo">Domingo</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Horário</label>
+                            <input type="time" id="scheduleTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Local / Destino (Aonde ir)</label>
+                            <input type="text" id="scheduleLocation" placeholder="Ex: Cliente XYZ / Unidade Sul" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Instruções / Descrição</label>
+                        <textarea id="scheduleDesc" rows="2" placeholder="Ex: Realizar manutenção no servidor local."></textarea>
+                    </div>
+                    <button type="submit" class="btn-success">Lançar na Agenda do Usuário</button>
+                </form>
             </div>
         </div>
 
-        <!-- Painel Explicativo -->
-        <div class="card" style="background-color: #111827;">
-            <h2>💡 Resumo Geral da Agenda</h2>
-            <p style="font-size: 13px; color: #94a3b8; line-height: 1.5;">
-                Use o painel para organizar as atividades na obra diária. Você pode marcar cada tarefa como "Executada" para controle ou removê-las quando necessário.
-            </p>
+        <!-- AGENDA SEMANAL (VISÍVEL PARA TODOS) -->
+        <div class="card">
+            <h3>📅 Minha Agenda Semanal</h3>
+            <div class="agenda-grid" id="agendaGridContainer">
+                <!-- As colunas dos dias da semana serão geradas dinamicamente aqui -->
+            </div>
         </div>
+
     </div>
+
 </div>
+
+<script>
+    // --- ESTRUTURA E BANCO DE DADOS LOCAL ---
+    const DIAS_SEMANA = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
+    
+    // Dados padrão inicializados se o LocalStorage estiver vazio
+    let usuarios = JSON.parse(localStorage.getItem('app_usuarios')) || [
+        { user: 'admin', pass: 'Rafa180993', role: 'admin' }
+    ];
+
+    let agendamentos = JSON.parse(localStorage.getItem('app_agendamentos')) || [];
+    let usuarioLogado = null;
+
+    // --- AUTENTICAÇÃO E LOGIN ---
+    function realizarLogin(e) {
+        e.preventDefault();
+        const u = document.getElementById('loginUser').value.trim();
+        const p = document.getElementById('loginPass').value.trim();
+
+        const usuarioEncontrado = usuarios.find(user => user.user.toLowerCase() === u.toLowerCase() && user.pass === p);
+
+        if (usuarioEncontrado) {
+            usuarioLogado = usuarioEncontrado;
+            document.getElementById('loginUser').value = '';
+            document.getElementById('loginPass').value = '';
+            carregarAplicacao();
+        } else {
+            alert('❌ Usuário ou senha incorretos!');
+        }
+    }
+
+    function logout() {
+        usuarioLogado = null;
+        document.getElementById('main-screen').classList.add('hidden');
+        document.getElementById('login-screen').classList.remove('hidden');
+    }
+
+    // --- INICIALIZAÇÃO DA INTERFACE ---
+    function carregarAplicacao() {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('main-screen').classList.remove('hidden');
+        document.getElementById('displayUserName').innerText = usuarioLogado.user;
+
+        const isAdmin = usuarioLogado.role === 'admin';
+
+        if (isAdmin) {
+            document.getElementById('admin-panel').classList.remove('hidden');
+            document.getElementById('adminBadge').classList.remove('hidden');
+            atualizarSelectUsuarios();
+        } else {
+            document.getElementById('admin-panel').classList.add('hidden');
+            document.getElementById('adminBadge').classList.add('hidden');
+        }
+
+        renderizarAgenda();
+    }
+
+    // --- FUNÇÕES DO ADMINISTRADOR ---
+    function cadastrarUsuario(e) {
+        e.preventDefault();
+        const u = document.getElementById('newUsername').value.trim();
+        const p = document.getElementById('newPassword').value.trim();
+
+        if (usuarios.some(user => user.user.toLowerCase() === u.toLowerCase())) {
+            alert('⚠️ Este nome de usuário já existe!');
+            return;
+        }
+
+        usuarios.push({ user: u, pass: p, role: 'user' });
+        salvarDados();
+        alert(`✅ Usuário "${u}" criado com sucesso!`);
+        
+        document.getElementById('newUsername').value = '';
+        document.getElementById('newPassword').value = '';
+        atualizarSelectUsuarios();
+    }
+
+    function atualizarSelectUsuarios() {
+        const select = document.getElementById('scheduleUserSelect');
+        select.innerHTML = '<option value="">Selecione um usuário...</option>';
+        
+        // Filtra apenas usuários comuns para a lista, ou permite agendar para o admin também
+        usuarios.forEach(user => {
+            const option = document.createElement('option');
+            option.value = user.user;
+            option.innerText = user.user + (user.role === 'admin' ? ' (Admin)' : '');
+            select.appendChild(option);
+        });
+    }
+
+    function agendarTarefa(e) {
+        e.preventDefault();
+        const usuarioDestino = document.getElementById('scheduleUserSelect').value;
+        const dia = document.getElementById('scheduleDaySelect').value;
+        const hora = document.getElementById('scheduleTime').value;
+        const local = document.getElementById('scheduleLocation').value.trim();
+        const desc = document.getElementById('scheduleDesc').value.trim();
+
+        if (!usuarioDestino) {
+            alert('Por favor, selecione um usuário.');
+            return;
+        }
+
+        const novoEvento = {
+            id: Date.now(),
+            usuario: usuarioDestino,
+            dia: dia,
+            hora: hora,
+            local: local,
+            desc: desc
+        };
+
+        agendamentos.push(novoEvento);
+        salvarDados();
+        alert('📌 Agendamento salvo com sucesso!');
+
+        document.getElementById('scheduleLocation').value = '';
+        document.getElementById('scheduleDesc').value = '';
+        renderizarAgenda();
+    }
+
+    function deletarEvento(id) {
+        if (confirm('Deseja remover este agendamento?')) {
+            agendamentos = agendamentos.filter(ev => ev.id !== id);
+            salvarDados();
+            renderizarAgenda();
+        }
+    }
+
+    // --- RENDERIZAÇÃO DA AGENDA ---
+    function renderizarAgenda() {
+        const container = document.getElementById('agendaGridContainer');
+        container.innerHTML = '';
+
+        const isAdmin = usuarioLogado.role === 'admin';
+
+        DIAS_SEMANA.forEach(dia => {
+            const col = document.createElement('div');
+            col.className = 'day-column';
+
+            let htmlEventos = '';
+
+            // Filtra os agendamentos: se for Admin, mostra tudo. Se for usuário comum, mostra apenas os seus.
+            const eventosDoDia = agendamentos.filter(ev => {
+                const mesmoDia = ev.dia === dia;
+                return isAdmin ? mesmoDia : (mesmoDia && ev.usuario.toLowerCase() === usuarioLogado.user.toLowerCase());
+            });
+
+            // Ordena por horário
+            eventosDoDia.sort((a, b) => a.hora.localeCompare(b.hora));
+
+            eventosDoDia.forEach(ev => {
+                const btnDeletar = isAdmin ? `<button class="btn-danger" onclick="deletarEvento(${ev.id})">✕</button>` : '';
+                const tagUsuario = isAdmin ? `<span class="event-user">👤 ${ev.usuario}</span>` : '';
+
+                htmlEventos += `
+                    <div class="event-card ${isAdmin ? 'admin-view' : ''}">
+                        <div class="event-time">
+                            <span>⏰ ${ev.hora}</span>
+                            ${btnDeletar}
+                        </div>
+                        <span class="event-location">📍 ${ev.local}</span>
+                        <div class="event-desc">${ev.desc || ''}</div>
+                        ${tagUsuario}
+                    </div>
+                `;
+            });
+
+            col.innerHTML = `
+                <div class="day-title">${dia}</div>
+                ${htmlEventos || '<p style="color:#475569; font-size:11px; text-align:center; margin-top:20px;">Sem compromissos</p>'}
+            `;
+
+            container.appendChild(col);
+        });
+    }
+
+    // --- PERSISTÊNCIA ---
+    function salvarDados() {
+        localStorage.setItem('app_usuarios', JSON.stringify(usuarios));
+        localStorage.setItem('app_agendamentos', JSON.stringify(agendamentos));
+    }
+</script>
+
+</body>
+</html>
