@@ -94,7 +94,7 @@
             .admin-form-row { grid-template-columns: 1fr; }
         }
 
-        /* ESTILOS DE IMPRESSÃO NATIVA (GERAÇÃO PERFEITA DE PDF) */
+        /* ESTILOS DE IMPRESSÃO NATIVA */
         @media print {
             @page { size: landscape; margin: 8mm; }
             body { background: #ffffff !important; color: #000000 !important; padding: 0 !important; }
@@ -504,6 +504,24 @@
         });
     }
 
+    function enviarParaGoogleSheets(listaEventos) {
+        if (!GOOGLE_SCRIPT_URL) return;
+
+        // Envia como parâmetros codificados para evitar bloqueios de CORS do Google Apps Script
+        const dataStr = JSON.stringify(listaEventos);
+        
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ data: dataStr })
+        }).then(() => {
+            console.log('✅ Enviado com sucesso para o Google Sheets!');
+        }).catch(err => {
+            console.error('❌ Erro no envio para o Google Sheets:', err);
+        });
+    }
+
     function agendarTarefa(e) {
         e.preventDefault();
         const u1 = document.getElementById('scheduleUserSelect1').value;
@@ -553,21 +571,10 @@
 
         salvarDados();
 
-        // Envio direto para o Google Sheets via API do Apps Script
-        if (GOOGLE_SCRIPT_URL) {
-            fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(novosLancamentos)
-            }).then(() => {
-                console.log('Dados salvos na planilha Google com sucesso!');
-            }).catch(err => {
-                console.error('Erro ao enviar para o Google Sheets:', err);
-            });
-        }
+        // Dispara o envio direto para a planilha Google
+        enviarParaGoogleSheets(novosLancamentos);
 
-        alert(`📌 ${novosLancamentos.length} agendamento(s) salvo(s) na agenda e sincronizado(s) com a planilha!`);
+        alert(`📌 ${novosLancamentos.length} agendamento(s) salvo(s) e enviado(s) para a planilha!`);
 
         document.getElementById('scheduleLocation').value = '';
         document.getElementById('scheduleDesc').value = '';
@@ -594,15 +601,7 @@
             agendamentos.push(eventoDuplicado);
             salvarDados();
 
-            // Sincroniza duplicados também com a planilha Google
-            if (GOOGLE_SCRIPT_URL) {
-                fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify([eventoDuplicado])
-                });
-            }
+            enviarParaGoogleSheets([eventoDuplicado]);
 
             alert('✅ Evento copiado e sincronizado com a planilha!');
             
