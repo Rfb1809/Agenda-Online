@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agenda Semanal Corporativa (Mobile & Cloud DB)</title>
+    <title>Agenda Semanal Corporativa</title>
     <style>
         :root {
             --bg-main: #0b0f19;
@@ -56,7 +56,6 @@
         .user-badge { background: var(--primary); padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; }
         .week-picker-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; background: #0b0f19; padding: 10px; border-radius: 8px; border: 1px solid var(--card-border); }
 
-        /* TABELA MATRICIAL COM SUPORTE A TOUCH / MOBILE */
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 10px; border-radius: 8px; border: 1px solid var(--card-border); }
         .excel-table { width: 100%; min-width: 700px; border-collapse: collapse; background-color: var(--card-bg); color: var(--text-main); font-size: 11px; text-align: center; }
         .excel-table th, .excel-table td { border: 1px solid var(--card-border); padding: 6px 4px; vertical-align: middle; }
@@ -277,6 +276,16 @@
         localStorage.setItem('app_agendamentos', JSON.stringify(agendamentos));
     }
 
+    // Normaliza a data eliminando horários (extrai AAAA-MM-DD)
+    function normalizarData(dataString) {
+        if (!dataString) return "";
+        let str = String(dataString).trim();
+        if (str.includes("T")) {
+            str = str.split("T")[0];
+        }
+        return str.substring(0, 10);
+    }
+
     function carregarDadosDoGoogleSheets() {
         mostrarLoader(true);
         fetch(GOOGLE_SCRIPT_URL)
@@ -294,7 +303,7 @@
                     renderizarAgenda();
                 }
             })
-            .catch(err => console.log("Aviso: carregando do cache local.", err))
+            .catch(err => console.log("Carregando localmente.", err))
             .finally(() => mostrarLoader(false));
     }
 
@@ -550,7 +559,7 @@
                     id: Date.now() + Math.random(),
                     usuario: user,
                     funcao: funcao || 'GERAL',
-                    data: dataIso,
+                    data: normalizarData(dataIso),
                     local: local,
                     desc: desc
                 };
@@ -580,6 +589,7 @@
         }
     }
 
+    // RENDERIZAÇÃO MATRICIAL COM SUPORTE A DATAS FORMATADAS PELO GOOGLE
     function renderizarAgenda() {
         if (!usuarioLogado) return;
         const isAdmin = usuarioLogado.role === 'admin';
@@ -609,7 +619,13 @@
             tr.innerHTML = `<td class="col-colaborador">${colab.user}</td>`;
 
             datasDaSemanaAtual.forEach(diaInfo => {
-                const evsDoDia = agendamentos.filter(ev => String(ev.usuario).toLowerCase() === String(colab.user).toLowerCase() && ev.data === diaInfo.dataISO);
+                // Filtra agendamentos comparando datas normalizadas (YYYY-MM-DD) e nomes flexíveis
+                const evsDoDia = agendamentos.filter(ev => {
+                    const mesmaData = normalizarData(ev.data) === diaInfo.dataISO;
+                    const mesmoUser = String(colab.user).toLowerCase().includes(String(ev.usuario).toLowerCase()) || 
+                                      String(ev.usuario).toLowerCase().includes(String(colab.user).toLowerCase());
+                    return mesmaData && mesmoUser;
+                });
 
                 let cellHTML = '';
                 evsDoDia.forEach(ev => {
