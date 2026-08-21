@@ -97,13 +97,13 @@
         }
 
         /* ESTILOS PARA GERAR O PDF */
-        #pdf-render-area { background: #ffffff !important; color: #000000 !important; padding: 20px; font-family: Arial, sans-serif; }
-        #pdf-render-area h2 { color: #0284c7; border-bottom: 2px solid #0284c7; padding-bottom: 5px; font-size: 18px; margin-bottom: 10px; }
-        #pdf-render-area .pdf-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; font-size: 10px; }
-        #pdf-render-area .pdf-day { border: 1px solid #cbd5e1; padding: 5px; border-radius: 4px; background: #f8fafc; min-height: 200px; }
-        #pdf-render-area .pdf-day-title { font-weight: bold; text-align: center; color: #0f172a; border-bottom: 1px solid #cbd5e1; padding-bottom: 2px; margin-bottom: 4px; }
-        #pdf-render-area .pdf-role-title { font-size: 9px; font-weight: bold; color: #d97706; margin-top: 6px; margin-bottom: 2px; text-transform: uppercase; }
-        #pdf-render-area .pdf-event { background: #ffffff; border-left: 3px solid #0284c7; padding: 4px; margin-bottom: 4px; border-radius: 2px; font-size: 9px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .pdf-export-container { background: #ffffff !important; color: #000000 !important; padding: 20px; font-family: Arial, sans-serif; box-sizing: border-box; }
+        .pdf-export-container h2 { color: #0284c7; border-bottom: 2px solid #0284c7; padding-bottom: 5px; font-size: 18px; margin-bottom: 10px; }
+        .pdf-export-container .pdf-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; font-size: 10px; }
+        .pdf-export-container .pdf-day { border: 1px solid #cbd5e1; padding: 5px; border-radius: 4px; background: #f8fafc; min-height: 200px; }
+        .pdf-export-container .pdf-day-title { font-weight: bold; text-align: center; color: #0f172a; border-bottom: 1px solid #cbd5e1; padding-bottom: 2px; margin-bottom: 4px; }
+        .pdf-export-container .pdf-role-title { font-size: 9px; font-weight: bold; color: #d97706; margin-top: 6px; margin-bottom: 2px; text-transform: uppercase; }
+        .pdf-export-container .pdf-event { background: #ffffff; border-left: 3px solid #0284c7; padding: 4px; margin-bottom: 4px; border-radius: 2px; font-size: 9px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
@@ -250,9 +250,6 @@
 
 </div>
 
-<!-- CONTAINER OCULTO PARA GERAR O PDF DE FORMA CONFIÁVEL -->
-<div id="pdf-render-wrapper" style="position: absolute; left: -9999px; top: -9999px;"></div>
-
 <script>
     const DIAS_NOMES = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"];
     
@@ -339,7 +336,7 @@
                 nomeDia: DIAS_NOMES[i],
                 dataISO: iso,
                 dataFormatada: dataFmt,
-                isWeekday: i < 5 // Segunda a Sexta
+                isWeekday: i < 5
             });
         }
 
@@ -696,33 +693,44 @@
             `;
         });
 
-        const wrapper = document.getElementById('pdf-render-wrapper');
-        wrapper.innerHTML = `
-            <div id="pdf-render-area" style="width: 1000px;">
-                <h2>📅 ${tituloPDF}</h2>
-                <p style="margin-bottom: 12px; font-size: 11px; color: #475569;"><b>${subTitulo}</b></p>
-                <div class="pdf-grid">
-                    ${gridDiasHTML}
-                </div>
+        const tempElement = document.createElement('div');
+        tempElement.className = 'pdf-export-container';
+        tempElement.style.width = '1000px';
+        tempElement.style.position = 'absolute';
+        tempElement.style.top = '0';
+        tempElement.style.left = '0';
+        tempElement.style.zIndex = '-9999';
+        tempElement.style.opacity = '1';
+
+        tempElement.innerHTML = `
+            <h2>📅 ${tituloPDF}</h2>
+            <p style="margin-bottom: 12px; font-size: 11px; color: #475569;"><b>${subTitulo}</b></p>
+            <div class="pdf-grid">
+                ${gridDiasHTML}
             </div>
         `;
 
-        const element = document.getElementById('pdf-render-area');
+        document.body.appendChild(tempElement);
+        window.scrollTo(0, 0);
+
+        await new Promise(resolve => setTimeout(resolve, 300));
 
         const opt = {
             margin:       [8, 8, 8, 8],
             filename:     `Agenda_${usuarioLogado.user}_${datasDaSemanaAtual[0].dataISO}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, logging: false },
+            html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
         };
 
         try {
-            await html2pdf().set(opt).from(element).save();
+            await html2pdf().set(opt).from(tempElement).save();
         } catch (err) {
             alert("Erro ao gerar PDF: " + err.message);
         } finally {
-            wrapper.innerHTML = '';
+            if (document.body.contains(tempElement)) {
+                document.body.removeChild(tempElement);
+            }
         }
     }
 
