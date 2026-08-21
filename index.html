@@ -259,10 +259,16 @@
 
 </div>
 
+<!-- ELEMENTOS INVISÍVEIS PARA GARANTIR A TRANSFERÊNCIA DOS DADOS AO GOOGLE SHEETS -->
+<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+<form id="googleSheetForm" method="POST" target="hidden_iframe" style="display:none;">
+    <input type="hidden" name="data" id="googleSheetDataInput">
+</form>
+
 <script>
     const DIAS_NOMES = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"];
     
-    // ENDEREÇO DA SUA WEB APP DO GOOGLE APPS SCRIPT
+    // LINK DIRETO DO SEU GOOGLE APPS SCRIPT
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz9zeHGoDDk8Tch7gBhS355k4B8CXV8BiRhZU2AVOovsnoWuwyp8phHhHyY4oZ-vhwh5Q/exec';
 
     let usuarios = JSON.parse(localStorage.getItem('app_usuarios')) || [
@@ -507,19 +513,13 @@
     function enviarParaGoogleSheets(listaEventos) {
         if (!GOOGLE_SCRIPT_URL) return;
 
-        // Envia como parâmetros codificados para evitar bloqueios de CORS do Google Apps Script
-        const dataStr = JSON.stringify(listaEventos);
+        const form = document.getElementById('googleSheetForm');
+        const input = document.getElementById('googleSheetDataInput');
         
-        fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({ data: dataStr })
-        }).then(() => {
-            console.log('✅ Enviado com sucesso para o Google Sheets!');
-        }).catch(err => {
-            console.error('❌ Erro no envio para o Google Sheets:', err);
-        });
+        form.action = GOOGLE_SCRIPT_URL;
+        input.value = JSON.stringify(listaEventos);
+        
+        form.submit();
     }
 
     function agendarTarefa(e) {
@@ -571,7 +571,7 @@
 
         salvarDados();
 
-        // Dispara o envio direto para a planilha Google
+        // Envia via formulário oculto
         enviarParaGoogleSheets(novosLancamentos);
 
         alert(`📌 ${novosLancamentos.length} agendamento(s) salvo(s) e enviado(s) para a planilha!`);
