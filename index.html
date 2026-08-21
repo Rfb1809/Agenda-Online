@@ -5,98 +5,120 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agenda Semanal Corporativa</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #0f172a; color: #f8fafc; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 12px; }
+        :root {
+            --bg-main: #0b0f19;
+            --card-bg: #151d2a;
+            --card-border: #232f42;
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --accent: #38bdf8;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 16px; }
         
-        .container { width: 100%; max-width: 1200px; }
+        .container { width: 100%; max-width: 1280px; }
         
         /* Card Base */
-        .card { background: #1e293b; padding: 18px; border-radius: 12px; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin-bottom: 15px; }
+        .card { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--card-border); box-shadow: 0 10px 30px rgba(0,0,0,0.4); margin-bottom: 20px; }
         
         /* Login */
-        #login-screen { max-width: 400px; margin: 30px auto; }
-        h2 { color: #38bdf8; margin-bottom: 20px; text-align: center; font-size: 22px; }
-        h3 { color: #f1f5f9; margin-bottom: 15px; font-size: 16px; border-bottom: 2px solid #334155; padding-bottom: 8px; }
+        #login-screen { max-width: 400px; margin: 50px auto; }
+        h2 { color: var(--accent); margin-bottom: 20px; text-align: center; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+        h3 { color: var(--text-main); margin-bottom: 16px; font-size: 15px; border-bottom: 1px solid var(--card-border); padding-bottom: 10px; font-weight: 600; }
         
         /* Formulários e Inputs */
         .form-group { margin-bottom: 15px; }
-        label { display: block; font-size: 11px; font-weight: bold; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px; }
-        input[type="text"], input[type="password"], input[type="date"], select, textarea { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #475569; border-radius: 8px; color: #fff; font-size: 14px; outline: none; }
-        input:focus, select:focus, textarea:focus { border-color: #38bdf8; }
+        label { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        input[type="text"], input[type="password"], input[type="date"], select, textarea { width: 100%; padding: 10px 14px; background: #0b0f19; border: 1px solid var(--card-border); border-radius: 8px; color: #fff; font-size: 13px; outline: none; transition: 0.2s; }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.15); }
         
         /* Checkboxes Dias da Semana */
-        .checkbox-days-wrapper { background: #0f172a; padding: 10px; border-radius: 8px; border: 1px solid #475569; }
-        .quick-select-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed #334155; font-size: 12px; color: #38bdf8; font-weight: bold; cursor: pointer; }
-        .checkbox-days { display: flex; flex-wrap: wrap; gap: 8px; }
-        .checkbox-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #f8fafc; cursor: pointer; width: 48%; }
-        .checkbox-item input[type="checkbox"], .quick-select-bar input[type="checkbox"] { width: 18px; height: 18px; accent-color: #38bdf8; cursor: pointer; }
+        .checkbox-days-wrapper { background: #0b0f19; padding: 12px; border-radius: 8px; border: 1px solid var(--card-border); }
+        .quick-select-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed var(--card-border); font-size: 12px; color: var(--accent); font-weight: 600; cursor: pointer; }
+        .checkbox-days { display: flex; flex-wrap: wrap; gap: 10px; }
+        .checkbox-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-main); cursor: pointer; width: 48%; }
+        .checkbox-item input[type="checkbox"], .quick-select-bar input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
 
         /* Botões */
-        button { border: none; padding: 12px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
-        .btn-primary { background: #0284c7; color: white; width: 100%; }
-        .btn-primary:hover { background: #0369a1; }
-        .btn-success { background: #10b981; color: white; width: 100%; }
-        .btn-success:hover { background: #059669; }
+        button { border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-primary { background: var(--primary); color: white; width: 100%; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-success { background: var(--success); color: white; width: 100%; }
+        .btn-success:hover { filter: brightness(0.9); }
         .btn-pdf { background: #e11d48; color: white; }
         .btn-pdf:hover { background: #be123c; }
-        .btn-danger { background: #ef4444; color: white; padding: 4px 8px; font-size: 10px; }
-        .btn-danger:hover { background: #dc2626; }
-        .btn-copy { background: #0284c7; color: white; padding: 4px 8px; font-size: 10px; margin-right: 2px; }
-        .btn-copy:hover { background: #0369a1; }
-        .btn-logout { background: #334155; color: #f8fafc; padding: 8px 12px; font-size: 13px; }
-        .btn-logout:hover { background: #475569; }
+        .btn-danger { background: rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 3px 6px; font-size: 10px; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .btn-danger:hover { background: var(--danger); color: white; }
+        .btn-copy { background: rgba(2, 132, 199, 0.2); color: #7dd3fc; padding: 3px 6px; font-size: 10px; border: 1px solid rgba(2, 132, 199, 0.3); margin-right: 2px; }
+        .btn-copy:hover { background: var(--primary); color: white; }
+        .btn-logout { background: #232f42; color: var(--text-main); padding: 8px 14px; font-size: 12px; }
+        .btn-logout:hover { background: #334155; }
         
-        .btn-toggle-dropdown { background: #0f172a; border: 1px solid #334155; color: #38bdf8; width: 100%; justify-content: space-between; font-size: 14px; padding: 12px 15px; margin-bottom: 10px; }
-        .dropdown-content { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 15px; margin-bottom: 15px; max-height: 250px; overflow-y: auto; }
+        .btn-toggle-dropdown { background: #0b0f19; border: 1px solid var(--card-border); color: var(--accent); width: 100%; justify-content: space-between; font-size: 13px; padding: 10px 14px; margin-bottom: 10px; border-radius: 8px; }
+        .dropdown-content { background: #0b0f19; border: 1px solid var(--card-border); border-radius: 8px; padding: 12px; margin-bottom: 15px; max-height: 220px; overflow-y: auto; }
 
-        .manage-list-item { display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 10px; border-radius: 6px; margin-bottom: 6px; border-left: 3px solid #38bdf8; font-size: 13px; }
+        .manage-list-item { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; border-left: 3px solid var(--accent); font-size: 12px; }
 
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
-        .user-badge { background: #0284c7; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+        .user-badge { background: var(--primary); padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; }
         
-        .week-picker-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid #334155; }
+        .week-picker-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; background: #0b0f19; padding: 12px; border-radius: 8px; border: 1px solid var(--card-border); }
         .week-picker-bar input[type="date"] { width: 100%; }
 
-        /* ESTILO DA TABELA MATRICIAL ESTILO EXCEL */
-        .table-responsive { width: 100%; overflow-x: auto; margin-top: 15px; }
-        .excel-table { width: 100%; border-collapse: collapse; background-color: #ffffff; color: #000000; font-size: 11px; text-align: center; }
-        .excel-table th, .excel-table td { border: 1px solid #000000; padding: 6px 4px; vertical-align: middle; }
+        /* ESTILO DA TABELA MATRICIAL TELA (MODERNO DARK) */
+        .table-responsive { width: 100%; overflow-x: auto; margin-top: 15px; border-radius: 8px; border: 1px solid var(--card-border); }
+        .excel-table { width: 100%; border-collapse: collapse; background-color: var(--card-bg); color: var(--text-main); font-size: 12px; text-align: center; }
+        .excel-table th, .excel-table td { border: 1px solid var(--card-border); padding: 8px 6px; vertical-align: middle; }
         
-        /* Cabeçalho Amarelo */
-        .excel-table th.header-yellow, .excel-table td.col-colaborador { background-color: #ffff00 !important; color: #000000 !important; font-weight: bold; text-transform: uppercase; }
-        .excel-table th.header-white { background-color: #ffffff !important; color: #000000 !important; font-weight: bold; }
-        .excel-table th.weekend-text { color: #dc2626 !important; }
+        .excel-table th.header-colab { background: linear-gradient(135deg, #0284c7, #0369a1) !important; color: #ffffff !important; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+        .excel-table th.header-day { background-color: #1e293b !important; color: var(--accent) !important; font-weight: 700; font-size: 11px; }
+        .excel-table th.header-date { background-color: #0f172a !important; color: var(--text-muted) !important; font-weight: 600; font-size: 10px; }
+        .excel-table th.weekend-text { color: #f43f5e !important; }
         
-        /* Célula do Colaborador */
-        .excel-table td.col-colaborador { width: 160px; text-align: center; font-size: 11px; word-break: break-word; }
+        .excel-table td.col-colaborador { background-color: #1e293b !important; color: #f8fafc !important; font-weight: 700; width: 170px; text-align: left; padding-left: 10px; font-size: 11px; word-break: break-word; border-right: 2px solid var(--primary); }
         
-        /* Conteúdo das Tarefas dentro da Célula */
-        .cell-task-item { background-color: #e0f2fe; border: 1px solid #bae6fd; padding: 4px; border-radius: 3px; margin-bottom: 3px; font-weight: bold; font-size: 10px; text-transform: uppercase; line-height: 1.2; position: relative; }
+        /* Task Cards/Chips dentro da Célula */
+        .cell-task-item { background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); color: #e0f2fe; padding: 5px 6px; border-radius: 6px; margin-bottom: 4px; font-weight: 600; font-size: 10px; text-transform: uppercase; line-height: 1.3; text-align: left; }
         .cell-task-item:last-child { margin-bottom: 0; }
-        .cell-task-actions { display: flex; justify-content: center; gap: 2px; margin-top: 3px; }
+        .cell-task-actions { display: flex; justify-content: flex-end; gap: 2px; margin-top: 4px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 3px; }
 
         .admin-form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
         .hidden { display: none !important; }
 
         @media (max-width: 768px) {
-            body { padding: 6px; }
-            .card { padding: 12px; }
+            body { padding: 8px; }
+            .card { padding: 14px; }
             .checkbox-item { width: 100%; }
             .week-picker-bar input[type="date"] { width: 100%; }
             .admin-form-row { grid-template-columns: 1fr; }
         }
 
-        /* CONFIGURAÇÃO DE IMPRESSÃO IGUAL À IMAGEM */
+        /* CONFIGURAÇÃO DE IMPRESSÃO / PDF CORPORATIVO CLEAN */
         @media print {
-            @page { size: landscape; margin: 5mm; }
-            body { background: #ffffff !important; color: #000000 !important; padding: 0 !important; }
+            @page { size: landscape; margin: 6mm; }
+            body { background: #ffffff !important; color: #0f172a !important; padding: 0 !important; }
             .container { max-width: 100% !important; width: 100% !important; }
             #login-screen, #admin-panel, .header, .week-picker-bar, .btn-toggle-dropdown, .cell-task-actions, button { display: none !important; }
             .card { background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
-            .table-responsive { overflow: visible !important; }
-            .excel-table { font-size: 9pt !important; width: 100% !important; }
-            .excel-table th, .excel-table td { border: 1px solid #000000 !important; padding: 4px !important; }
-            .cell-task-item { background-color: transparent !important; border: none !important; padding: 0 !important; font-size: 8pt !important; }
+            .table-responsive { overflow: visible !important; border: none !important; }
+            
+            .excel-table { font-size: 8.5pt !important; width: 100% !important; background: #ffffff !important; color: #000000 !important; }
+            .excel-table th, .excel-table td { border: 1px solid #cbd5e1 !important; padding: 5px 4px !important; }
+            
+            .excel-table th.header-colab { background-color: #0284c7 !important; color: #ffffff !important; font-size: 9pt !important; }
+            .excel-table th.header-day { background-color: #f1f5f9 !important; color: #0f172a !important; font-size: 8.5pt !important; }
+            .excel-table th.header-date { background-color: #ffffff !important; color: #475569 !important; font-size: 8pt !important; }
+            .excel-table th.weekend-text { color: #e11d48 !important; }
+            
+            .excel-table td.col-colaborador { background-color: #f8fafc !important; color: #0f172a !important; border-right: 2px solid #0284c7 !important; font-size: 8.5pt !important; }
+            
+            .cell-task-item { background-color: #f0f9ff !important; border: 1px solid #bae6fd !important; color: #0369a1 !important; padding: 3px 4px !important; font-size: 7.5pt !important; font-weight: 700 !important; }
         }
     </style>
 </head>
@@ -106,7 +128,7 @@
 
     <!-- TELA DE LOGIN -->
     <div id="login-screen" class="card">
-        <h2>🔒 Agenda - Acesso</h2>
+        <h2>🔒 Agenda Corporativa</h2>
         <form onsubmit="realizarLogin(event)">
             <div class="form-group">
                 <label>Usuário</label>
@@ -126,8 +148,8 @@
         <!-- CABEÇALHO -->
         <div class="header card" style="margin-bottom: 15px; padding: 12px 20px;">
             <div>
-                <span style="font-size: 16px; font-weight: bold;">👋 <span id="displayUserName" style="color: #38bdf8;"></span></span>
-                <span id="adminBadge" class="user-badge hidden" style="margin-left: 6px; background: #f59e0b;">ADMIN</span>
+                <span style="font-size: 15px; font-weight: 600;">👋 Olá, <span id="displayUserName" style="color: var(--accent);"></span></span>
+                <span id="adminBadge" class="user-badge hidden" style="margin-left: 6px; background: var(--warning); color: #000;">ADMIN</span>
             </div>
             <button onclick="logout()" class="btn-logout">Sair</button>
         </div>
@@ -177,7 +199,7 @@
 
             <!-- Agendar Função -->
             <div class="card">
-                <h3>📌 Agendar Função/Destino</h3>
+                <h3>📌 Agendar Função / Destino</h3>
                 <form onsubmit="agendarTarefa(event)">
                     <div class="admin-form-row">
                         <div class="form-group">
@@ -231,7 +253,7 @@
                     <input type="date" id="weekPickerDate" onchange="atualizarSemanaPorData(this.value)">
                 </div>
                 <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 5px; width: 100%;">
-                    <span style="font-size: 12px; color: #38bdf8; font-weight: bold;" id="weekRangeLabel"></span>
+                    <span style="font-size: 12px; color: var(--accent); font-weight: 700;" id="weekRangeLabel"></span>
                     <button onclick="exportarPDF()" class="btn-pdf" style="width: 100%;">📄 Baixar Agenda (PDF)</button>
                 </div>
             </div>
@@ -450,13 +472,13 @@
         
         const colaboradores = usuarios.filter(u => u.role !== 'admin');
         if (colaboradores.length === 0) {
-            containerColab.innerHTML = '<p style="font-size:12px; color:#64748b;">Nenhum colaborador cadastrado além do Admin.</p>';
+            containerColab.innerHTML = '<p style="font-size:12px; color:var(--text-muted);">Nenhum colaborador cadastrado além do Admin.</p>';
         } else {
             colaboradores.forEach(colab => {
                 const item = document.createElement('div');
                 item.className = 'manage-list-item';
                 item.innerHTML = `
-                    <span>👤 <b>${colab.user}</b> <small style="color:#38bdf8;">(${colab.funcao || 'Sem Função'})</small></span>
+                    <span>👤 <b>${colab.user}</b> <small style="color:var(--accent);">(${colab.funcao || 'Sem Função'})</small></span>
                     <button class="btn-danger" onclick="excluirUsuario('${colab.user}')">🗑️ Excluir</button>
                 `;
                 containerColab.appendChild(item);
@@ -469,7 +491,7 @@
         datalist.innerHTML = '';
 
         if (clientes.length === 0) {
-            containerClientes.innerHTML = '<p style="font-size:12px; color:#64748b;">Nenhum cliente cadastrado ainda.</p>';
+            containerClientes.innerHTML = '<p style="font-size:12px; color:var(--text-muted);">Nenhum cliente cadastrado ainda.</p>';
         } else {
             clientes.forEach(cli => {
                 const item = document.createElement('div');
@@ -612,26 +634,23 @@
         }
     }
 
-    // MONTA A TABELA MATRICIAL EXATAMENTE IGUAL À FOTO DO EXCEL
     function renderizarAgenda() {
         const isAdmin = usuarioLogado.role === 'admin';
         
-        // Renderizar Cabeçalho das Colunas (Dias e Datas)
         const rowNomes = document.getElementById('rowDiasNomes');
         const rowDatas = document.getElementById('rowDiasDatas');
 
-        rowNomes.innerHTML = '<th rowspan="2" style="background:#ffff00; width:160px; border:1px solid #000;">COLABORADOR</th>';
+        rowNomes.innerHTML = '<th rowspan="2" class="header-colab">COLABORADOR</th>';
         rowDatas.innerHTML = '';
 
         datasDaSemanaAtual.forEach(diaInfo => {
             const isEnd = diaInfo.isWeekend;
             const classText = isEnd ? 'weekend-text' : '';
 
-            rowNomes.innerHTML += `<th class="header-yellow ${classText}" style="border:1px solid #000;">${diaInfo.nomeDia}</th>`;
-            rowDatas.innerHTML += `<th class="header-white ${classText}" style="border:1px solid #000;">${diaInfo.dataFormatada}</th>`;
+            rowNomes.innerHTML += `<th class="header-day ${classText}">${diaInfo.nomeDia}</th>`;
+            rowDatas.innerHTML += `<th class="header-date ${classText}">${diaInfo.dataFormatada}</th>`;
         });
 
-        // Filtrar Lista de Colaboradores a serem exibidos
         const tbody = document.getElementById('tbodyMatricial');
         tbody.innerHTML = '';
 
@@ -641,19 +660,16 @@
         }
 
         if (listaExibicao.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" style="padding:15px; font-weight:bold;">Nenhum colaborador cadastrado.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" style="padding:20px; font-weight:600; color:var(--text-muted);">Nenhum colaborador cadastrado.</td></tr>';
             return;
         }
 
-        // Para cada colaborador, cria uma linha na tabela
         listaExibicao.forEach(colab => {
             const tr = document.createElement('tr');
 
-            // Célula Amarela com Nome do Colaborador
             let tdUser = `<td class="col-colaborador">${colab.user}</td>`;
             tr.innerHTML = tdUser;
 
-            // Preenche cada dia da semana para esse colaborador
             datasDaSemanaAtual.forEach(diaInfo => {
                 const evsDoDia = agendamentos.filter(ev => ev.usuario.toLowerCase() === colab.user.toLowerCase() && ev.data === diaInfo.dataISO);
 
@@ -677,7 +693,8 @@
                     `;
                 });
 
-                tr.innerHTML += `<td style="border:1px solid #000; background:${diaInfo.isWeekend ? '#f1f5f9' : '#ffffff'};">${cellHTML}</td>`;
+                const bgStyle = diaInfo.isWeekend ? 'background: rgba(15, 23, 42, 0.4);' : '';
+                tr.innerHTML += `<td style="${bgStyle}">${cellHTML}</td>`;
             });
 
             tbody.appendChild(tr);
