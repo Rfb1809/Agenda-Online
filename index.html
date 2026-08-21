@@ -95,15 +95,6 @@
             .week-picker-bar input[type="date"] { width: 100%; }
             .admin-form-row { grid-template-columns: 1fr; }
         }
-
-        /* ESTILOS PARA GERAR O PDF */
-        .pdf-export-container { background: #ffffff !important; color: #000000 !important; padding: 20px; font-family: Arial, sans-serif; box-sizing: border-box; }
-        .pdf-export-container h2 { color: #0284c7; border-bottom: 2px solid #0284c7; padding-bottom: 5px; font-size: 18px; margin-bottom: 10px; }
-        .pdf-export-container .pdf-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; font-size: 10px; }
-        .pdf-export-container .pdf-day { border: 1px solid #cbd5e1; padding: 5px; border-radius: 4px; background: #f8fafc; min-height: 200px; }
-        .pdf-export-container .pdf-day-title { font-weight: bold; text-align: center; color: #0f172a; border-bottom: 1px solid #cbd5e1; padding-bottom: 2px; margin-bottom: 4px; }
-        .pdf-export-container .pdf-role-title { font-size: 9px; font-weight: bold; color: #d97706; margin-top: 6px; margin-bottom: 2px; text-transform: uppercase; }
-        .pdf-export-container .pdf-event { background: #ffffff; border-left: 3px solid #0284c7; padding: 4px; margin-bottom: 4px; border-radius: 2px; font-size: 9px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
@@ -657,6 +648,7 @@
         const tituloPDF = `Agenda Semanal (${datasDaSemanaAtual[0].dataFormatada} - ${datasDaSemanaAtual[6].dataFormatada})`;
         const subTitulo = isAdmin ? 'Relatório Geral (Todos os Colaboradores Organizados por Função)' : `Colaborador: ${usuarioLogado.user}`;
 
+        // Cria a estrutura HTML estilizada inteiramente inline para evitar incompatibilidades de CSS no canvas
         let gridDiasHTML = '';
 
         datasDaSemanaAtual.forEach(diaInfo => {
@@ -668,17 +660,17 @@
             let evHTML = '';
 
             if (eventosDoDia.length === 0) {
-                evHTML = '<p style="color:#94a3b8; font-size:8px; text-align:center;">Sem tarefas</p>';
+                evHTML = '<p style="color:#94a3b8; font-size:8px; text-align:center; margin-top:10px;">Sem tarefas</p>';
             } else {
                 const grupos = agruparPorFuncao(eventosDoDia);
                 for (const [funcaoNome, listaEvs] of Object.entries(grupos)) {
-                    evHTML += `<div class="pdf-role-title">🛠️ ${funcaoNome}</div>`;
+                    evHTML += `<div style="font-size:9px; font-weight:bold; color:#d97706; margin-top:6px; margin-bottom:2px; text-transform:uppercase; border-bottom:1px solid #e2e8f0;">🛠️ ${funcaoNome}</div>`;
                     listaEvs.forEach(ev => {
                         evHTML += `
-                            <div class="pdf-event">
-                                <b>${ev.local}</b><br>
-                                ${ev.desc ? `<i style="color:#475569;">${ev.desc}</i><br>` : ''}
-                                ${isAdmin ? `<span style="color:#0284c7; font-weight:bold;">[${ev.usuario}]</span>` : ''}
+                            <div style="background:#ffffff; border-left:3px solid #0284c7; padding:4px; margin-bottom:4px; border-radius:2px; font-size:9px; box-shadow:0 1px 2px rgba(0,0,0,0.1);">
+                                <b style="color:#0f172a;">📍 ${ev.local}</b><br>
+                                ${ev.desc ? `<i style="color:#475569; font-size:8px;">${ev.desc}</i><br>` : ''}
+                                ${isAdmin ? `<span style="color:#0284c7; font-weight:bold; font-size:8px;">[👤 ${ev.usuario}]</span>` : ''}
                             </div>
                         `;
                     });
@@ -686,50 +678,56 @@
             }
 
             gridDiasHTML += `
-                <div class="pdf-day">
-                    <div class="pdf-day-title">${diaInfo.nomeDia.split('-')[0]}<br>${diaInfo.dataFormatada}</div>
+                <div style="border:1px solid #cbd5e1; padding:5px; border-radius:4px; background:#f8fafc; min-height:180px;">
+                    <div style="font-weight:bold; text-align:center; color:#0f172a; border-bottom:1px solid #cbd5e1; padding-bottom:2px; margin-bottom:4px; font-size:10px;">
+                        ${diaInfo.nomeDia.split('-')[0]}<br>${diaInfo.dataFormatada}
+                    </div>
                     ${evHTML}
                 </div>
             `;
         });
 
-        const tempElement = document.createElement('div');
-        tempElement.className = 'pdf-export-container';
-        tempElement.style.width = '1000px';
-        tempElement.style.position = 'absolute';
-        tempElement.style.top = '0';
-        tempElement.style.left = '0';
-        tempElement.style.zIndex = '-9999';
-        tempElement.style.opacity = '1';
+        // Container montado diretamente no DOM sem ocultação de z-index
+        const pdfContainer = document.createElement('div');
+        pdfContainer.id = 'pdf-export-element';
+        pdfContainer.style.width = '1050px';
+        pdfContainer.style.padding = '20px';
+        pdfContainer.style.backgroundColor = '#ffffff';
+        pdfContainer.style.color = '#000000';
+        pdfContainer.style.fontFamily = 'Arial, sans-serif';
+        pdfContainer.style.position = 'fixed';
+        pdfContainer.style.top = '0';
+        pdfContainer.style.left = '0';
+        pdfContainer.style.zIndex = '99999';
 
-        tempElement.innerHTML = `
-            <h2>📅 ${tituloPDF}</h2>
-            <p style="margin-bottom: 12px; font-size: 11px; color: #475569;"><b>${subTitulo}</b></p>
-            <div class="pdf-grid">
+        pdfContainer.innerHTML = `
+            <h2 style="color:#0284c7; border-bottom:2px solid #0284c7; padding-bottom:5px; font-size:18px; margin-bottom:6px;">📅 ${tituloPDF}</h2>
+            <p style="margin-bottom:12px; font-size:11px; color:#475569;"><b>${subTitulo}</b></p>
+            <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:5px;">
                 ${gridDiasHTML}
             </div>
         `;
 
-        document.body.appendChild(tempElement);
-        window.scrollTo(0, 0);
+        document.body.appendChild(pdfContainer);
 
-        await new Promise(resolve => setTimeout(resolve, 300));
+        // Dá tempo ao navegador para renderizar os elementos na tela
+        await new Promise(resolve => setTimeout(resolve, 500));
 
         const opt = {
-            margin:       [8, 8, 8, 8],
+            margin:       [5, 5, 5, 5],
             filename:     `Agenda_${usuarioLogado.user}_${datasDaSemanaAtual[0].dataISO}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
+            html2canvas:  { scale: 2, useCORS: true, logging: false },
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
         };
 
         try {
-            await html2pdf().set(opt).from(tempElement).save();
+            await html2pdf().set(opt).from(pdfContainer).save();
         } catch (err) {
             alert("Erro ao gerar PDF: " + err.message);
         } finally {
-            if (document.body.contains(tempElement)) {
-                document.body.removeChild(tempElement);
+            if (document.body.contains(pdfContainer)) {
+                document.body.removeChild(pdfContainer);
             }
         }
     }
