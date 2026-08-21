@@ -8,7 +8,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #0f172a; color: #f8fafc; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 12px; }
         
-        .container { width: 100%; max-width: 1100px; }
+        .container { width: 100%; max-width: 1200px; }
         
         /* Card Base */
         .card { background: #1e293b; padding: 18px; border-radius: 12px; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin-bottom: 15px; }
@@ -39,79 +39,64 @@
         .btn-success:hover { background: #059669; }
         .btn-pdf { background: #e11d48; color: white; }
         .btn-pdf:hover { background: #be123c; }
-        .btn-danger { background: #ef4444; color: white; padding: 6px 10px; font-size: 11px; }
+        .btn-danger { background: #ef4444; color: white; padding: 4px 8px; font-size: 10px; }
         .btn-danger:hover { background: #dc2626; }
-        .btn-copy { background: #0284c7; color: white; padding: 6px 10px; font-size: 11px; margin-right: 4px; }
+        .btn-copy { background: #0284c7; color: white; padding: 4px 8px; font-size: 10px; margin-right: 2px; }
         .btn-copy:hover { background: #0369a1; }
         .btn-logout { background: #334155; color: #f8fafc; padding: 8px 12px; font-size: 13px; }
         .btn-logout:hover { background: #475569; }
         
-        /* Botão para Menus/Abas Suspensas */
         .btn-toggle-dropdown { background: #0f172a; border: 1px solid #334155; color: #38bdf8; width: 100%; justify-content: space-between; font-size: 14px; padding: 12px 15px; margin-bottom: 10px; }
         .dropdown-content { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 15px; margin-bottom: 15px; max-height: 250px; overflow-y: auto; }
 
-        /* Listas Dentro da Aba Suspensa */
         .manage-list-item { display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 10px; border-radius: 6px; margin-bottom: 6px; border-left: 3px solid #38bdf8; font-size: 13px; }
 
-        /* Topo */
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
         .user-badge { background: #0284c7; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; }
         
-        /* Seletor de Data/Semana */
         .week-picker-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid #334155; }
         .week-picker-bar input[type="date"] { width: 100%; }
+
+        /* ESTILO DA TABELA MATRICIAL ESTILO EXCEL */
+        .table-responsive { width: 100%; overflow-x: auto; margin-top: 15px; }
+        .excel-table { width: 100%; border-collapse: collapse; background-color: #ffffff; color: #000000; font-size: 11px; text-align: center; }
+        .excel-table th, .excel-table td { border: 1px solid #000000; padding: 6px 4px; vertical-align: middle; }
         
-        /* Grid da Agenda Semanal */
-        .agenda-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 15px; }
-        .day-column { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px; min-height: 180px; }
-        .day-title { color: #38bdf8; font-weight: bold; text-align: center; margin-bottom: 2px; font-size: 13px; }
-        .day-date { color: #64748b; font-size: 11px; text-align: center; margin-bottom: 8px; border-bottom: 1px dashed #334155; padding-bottom: 4px; }
+        /* Cabeçalho Amarelo */
+        .excel-table th.header-yellow, .excel-table td.col-colaborador { background-color: #ffff00 !important; color: #000000 !important; font-weight: bold; text-transform: uppercase; }
+        .excel-table th.header-white { background-color: #ffffff !important; color: #000000 !important; font-weight: bold; }
+        .excel-table th.weekend-text { color: #dc2626 !important; }
         
-        /* Grupos de Função e Cards */
-        .role-group { margin-bottom: 10px; border-top: 1px solid #334155; padding-top: 6px; }
-        .role-group-title { font-size: 10px; text-transform: uppercase; color: #f59e0b; font-weight: bold; margin-bottom: 4px; display: block; }
+        /* Célula do Colaborador */
+        .excel-table td.col-colaborador { width: 160px; text-align: center; font-size: 11px; word-break: break-word; }
         
-        /* Card de Evento/Tarefa */
-        .event-card { background: #1e293b; border-left: 4px solid #38bdf8; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px; position: relative; }
-        .event-card.admin-view { border-left-color: #f59e0b; }
-        .event-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-        .event-location { color: #38bdf8; font-weight: bold; margin-bottom: 4px; display: block; word-break: break-word; }
-        .event-desc { color: #94a3b8; font-size: 11px; word-break: break-word; }
-        .event-user { font-size: 10px; background: #334155; color: #f8fafc; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px; }
-        
-        /* Layout Admin */
+        /* Conteúdo das Tarefas dentro da Célula */
+        .cell-task-item { background-color: #e0f2fe; border: 1px solid #bae6fd; padding: 4px; border-radius: 3px; margin-bottom: 3px; font-weight: bold; font-size: 10px; text-transform: uppercase; line-height: 1.2; position: relative; }
+        .cell-task-item:last-child { margin-bottom: 0; }
+        .cell-task-actions { display: flex; justify-content: center; gap: 2px; margin-top: 3px; }
+
         .admin-form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
-        
         .hidden { display: none !important; }
 
-        /* OTIMIZAÇÕES MOBILE */
         @media (max-width: 768px) {
             body { padding: 6px; }
             .card { padding: 12px; }
-            .agenda-grid { grid-template-columns: 1fr; }
             .checkbox-item { width: 100%; }
             .week-picker-bar input[type="date"] { width: 100%; }
             .admin-form-row { grid-template-columns: 1fr; }
         }
 
-        /* ESTILOS DE IMPRESSÃO NATIVA */
+        /* CONFIGURAÇÃO DE IMPRESSÃO IGUAL À IMAGEM */
         @media print {
-            @page { size: landscape; margin: 8mm; }
+            @page { size: landscape; margin: 5mm; }
             body { background: #ffffff !important; color: #000000 !important; padding: 0 !important; }
             .container { max-width: 100% !important; width: 100% !important; }
-            #login-screen, #admin-panel, .header, .week-picker-bar, .btn-copy, .btn-danger, button { display: none !important; }
+            #login-screen, #admin-panel, .header, .week-picker-bar, .btn-toggle-dropdown, .cell-task-actions, button { display: none !important; }
             .card { background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
-            h3 { color: #0284c7 !important; border-bottom: 2px solid #0284c7 !important; font-size: 18px !important; margin-bottom: 12px !important; }
-            .agenda-grid { display: table !important; width: 100% !important; table-layout: fixed !important; margin-top: 0 !important; }
-            .day-column { display: table-cell !important; background: #f8fafc !important; border: 1px solid #cbd5e1 !important; vertical-align: top !important; padding: 6px !important; }
-            .day-title { color: #0f172a !important; font-size: 12px !important; }
-            .day-date { color: #475569 !important; border-bottom: 1px solid #cbd5e1 !important; }
-            .role-group { border-top: 1px solid #cbd5e1 !important; }
-            .role-group-title { color: #d97706 !important; font-size: 10px !important; }
-            .event-card { background: #ffffff !important; border-left: 3px solid #0284c7 !important; border-top: 1px solid #e2e8f0 !important; border-right: 1px solid #e2e8f0 !important; border-bottom: 1px solid #e2e8f0 !important; color: #000 !important; padding: 5px !important; margin-bottom: 4px !important; }
-            .event-location { color: #0f172a !important; font-size: 11px !important; }
-            .event-desc { color: #475569 !important; font-size: 10px !important; }
-            .event-user { background: #e2e8f0 !important; color: #0284c7 !important; font-weight: bold !important; }
+            .table-responsive { overflow: visible !important; }
+            .excel-table { font-size: 9pt !important; width: 100% !important; }
+            .excel-table th, .excel-table td { border: 1px solid #000000 !important; padding: 4px !important; }
+            .cell-task-item { background-color: transparent !important; border: none !important; padding: 0 !important; font-size: 8pt !important; }
         }
     </style>
 </head>
@@ -174,11 +159,11 @@
                 <form onsubmit="cadastrarUsuario(event)" class="admin-form-row">
                     <div class="form-group">
                         <label>Nome / Usuário</label>
-                        <input type="text" id="newUsername" placeholder="Ex: joao" required>
+                        <input type="text" id="newUsername" placeholder="Ex: AGNALDO TELLES" required>
                     </div>
                     <div class="form-group">
                         <label>Função Padrão</label>
-                        <input type="text" id="newUserRole" placeholder="Ex: Técnico, Suporte, Vendas" required>
+                        <input type="text" id="newUserRole" placeholder="Ex: OBRA, DPM, GESTÃO" required>
                     </div>
                     <div class="form-group">
                         <label>Senha</label>
@@ -208,12 +193,12 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Função / Cargo no Evento</label>
-                            <input type="text" id="scheduleRole" placeholder="Ex: Manutenção, Suporte" required>
+                            <label>Prefixo / Função</label>
+                            <input type="text" id="scheduleRole" placeholder="Ex: OBRA, DPM, GESTÃO" required>
                         </div>
                         <div class="form-group">
                             <label>Cliente / Local</label>
-                            <input type="text" id="scheduleLocation" placeholder="Ex: Cliente XYZ" required list="clientesDataList">
+                            <input type="text" id="scheduleLocation" placeholder="Ex: SHOP_PARTAGE-DF" required list="clientesDataList">
                             <datalist id="clientesDataList"></datalist>
                         </div>
                     </div>
@@ -230,7 +215,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Instruções / Descrição</label>
+                        <label>Instruções / Descrição Opcional</label>
                         <textarea id="scheduleDesc" rows="2" placeholder="Instruções adicionais..."></textarea>
                     </div>
                     <button type="submit" class="btn-success">Lançar na Agenda</button>
@@ -238,7 +223,7 @@
             </div>
         </div>
 
-        <!-- AGENDA SEMANAL -->
+        <!-- AGENDA SEMANAL MATRICIAL -->
         <div class="card">
             <div class="week-picker-bar">
                 <div style="flex: 1; min-width: 200px;">
@@ -251,28 +236,35 @@
                 </div>
             </div>
 
-            <h3 id="tituloAgendaPDF">📅 Agenda Semanal (Organizada por Função)</h3>
-            <div class="agenda-grid" id="agendaGridContainer"></div>
+            <div class="table-responsive">
+                <table class="excel-table" id="tablaAgendaMatricial">
+                    <thead>
+                        <tr id="rowDiasNomes"></tr>
+                        <tr id="rowDiasDatas"></tr>
+                    </thead>
+                    <tbody id="tbodyMatricial"></tbody>
+                </table>
+            </div>
         </div>
 
     </div>
 
 </div>
 
-<!-- ELEMENTOS INVISÍVEIS PARA GARANTIR A TRANSFERÊNCIA DOS DADOS AO GOOGLE SHEETS -->
+<!-- ELEMENTOS INVISÍVEIS PARA TRANSFERÊNCIA AO GOOGLE APPS SCRIPT -->
 <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
 <form id="googleSheetForm" method="POST" target="hidden_iframe" style="display:none;">
     <input type="hidden" name="data" id="googleSheetDataInput">
 </form>
 
 <script>
-    const DIAS_NOMES = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"];
-    
-    // LINK DIRETO DO SEU GOOGLE APPS SCRIPT
+    const DIAS_NOMES_CURTOS = ["SEG", "TER", "QUA", "QUI", "SEX", "SAB", "DOM"];
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz9zeHGoDDk8Tch7gBhS355k4B8CXV8BiRhZU2AVOovsnoWuwyp8phHhHyY4oZ-vhwh5Q/exec';
 
     let usuarios = JSON.parse(localStorage.getItem('app_usuarios')) || [
-        { user: 'admin', pass: 'Rafa180993', role: 'admin', funcao: 'Administrador' }
+        { user: 'admin', pass: 'Rafa180993', role: 'admin', funcao: 'ADMIN' },
+        { user: 'AGNALDO TELLES', pass: '123', role: 'user', funcao: 'DPM' },
+        { user: 'HAMILTON CESAR', pass: '123', role: 'user', funcao: 'OBRA' }
     ];
 
     let clientes = JSON.parse(localStorage.getItem('app_clientes')) || [];
@@ -348,13 +340,14 @@
             const diaTemp = new Date(segundaFeira);
             diaTemp.setUTCDate(segundaFeira.getUTCDate() + i);
             const iso = diaTemp.toISOString().split('T')[0];
-            const dataFmt = diaTemp.getUTCDate().toString().padStart(2, '0') + '/' + (diaTemp.getUTCMonth() + 1).toString().padStart(2, '0');
+            const dataFmt = diaTemp.getUTCDate().toString().padStart(2, '0') + '/' + (diaTemp.getUTCMonth() + 1).toString().padStart(2, '0') + '/' + diaTemp.getUTCFullYear();
             
             datasDaSemanaAtual.push({
-                nomeDia: DIAS_NOMES[i],
+                nomeDia: DIAS_NOMES_CURTOS[i],
                 dataISO: iso,
                 dataFormatada: dataFmt,
-                isWeekday: i < 5
+                isWeekday: i < 5,
+                isWeekend: i >= 5
             });
         }
 
@@ -378,7 +371,7 @@
             label.className = 'checkbox-item';
             label.innerHTML = `
                 <input type="checkbox" name="selectedDay" value="${diaInfo.dataISO}" data-weekday="${diaInfo.isWeekday}" onchange="verificarToggleSemana()">
-                ${diaInfo.nomeDia.split('-')[0]} (${diaInfo.dataFormatada})
+                ${diaInfo.nomeDia} (${diaInfo.dataFormatada.substring(0,5)})
             `;
             container.appendChild(label);
         });
@@ -411,8 +404,8 @@
 
     function cadastrarUsuario(e) {
         e.preventDefault();
-        const u = document.getElementById('newUsername').value.trim();
-        const f = document.getElementById('newUserRole').value.trim();
+        const u = document.getElementById('newUsername').value.trim().toUpperCase();
+        const f = document.getElementById('newUserRole').value.trim().toUpperCase();
         const p = document.getElementById('newPassword').value.trim();
 
         if (usuarios.some(user => user.user.toLowerCase() === u.toLowerCase())) {
@@ -420,7 +413,7 @@
             return;
         }
 
-        usuarios.push({ user: u, pass: p, role: 'user', funcao: f || 'Geral' });
+        usuarios.push({ user: u, pass: p, role: 'user', funcao: f || 'GERAL' });
         salvarDados();
         alert(`✅ Colaborador "${u}" criado com sucesso!`);
         
@@ -429,6 +422,7 @@
         document.getElementById('newPassword').value = '';
         atualizarSelectUsuarios();
         renderizarListasAdmin();
+        renderizarAgenda();
     }
 
     function excluirUsuario(userNome) {
@@ -502,10 +496,12 @@
                 : '<option value="">Nenhum (Apenas 1 colaborador)</option>';
             
             usuarios.forEach(user => {
-                const option = document.createElement('option');
-                option.value = user.user;
-                option.innerText = user.user + (user.role === 'admin' ? ' (Admin)' : ` - ${user.funcao || 'Geral'}`);
-                select.appendChild(option);
+                if(user.role !== 'admin') {
+                    const option = document.createElement('option');
+                    option.value = user.user;
+                    option.innerText = user.user + ` (${user.funcao || 'GERAL'})`;
+                    select.appendChild(option);
+                }
             });
         });
     }
@@ -526,8 +522,8 @@
         e.preventDefault();
         const u1 = document.getElementById('scheduleUserSelect1').value;
         const u2 = document.getElementById('scheduleUserSelect2').value;
-        const funcao = document.getElementById('scheduleRole').value.trim();
-        const local = document.getElementById('scheduleLocation').value.trim();
+        const funcao = document.getElementById('scheduleRole').value.trim().toUpperCase();
+        const local = document.getElementById('scheduleLocation').value.trim().toUpperCase();
         const desc = document.getElementById('scheduleDesc').value.trim();
 
         const checkboxesMarcados = document.querySelectorAll('input[name="selectedDay"]:checked');
@@ -559,7 +555,7 @@
                 const novoEvento = {
                     id: Date.now() + Math.random(),
                     usuario: user,
-                    funcao: funcao || 'Geral',
+                    funcao: funcao || 'GERAL',
                     data: dataIso,
                     local: local,
                     desc: desc
@@ -570,11 +566,9 @@
         });
 
         salvarDados();
-
-        // Envia via formulário oculto
         enviarParaGoogleSheets(novosLancamentos);
 
-        alert(`📌 ${novosLancamentos.length} agendamento(s) salvo(s) e enviado(s) para a planilha!`);
+        alert(`📌 ${novosLancamentos.length} agendamento(s) salvo(s) na agenda e enviado(s) para a planilha!`);
 
         document.getElementById('scheduleLocation').value = '';
         document.getElementById('scheduleDesc').value = '';
@@ -603,7 +597,7 @@
 
             enviarParaGoogleSheets([eventoDuplicado]);
 
-            alert('✅ Evento copiado e sincronizado com a planilha!');
+            alert('✅ Evento copiado e sincronizado!');
             
             atualizarSemanaPorData(novaData.trim());
             document.getElementById('weekPickerDate').value = novaData.trim();
@@ -618,87 +612,80 @@
         }
     }
 
-    function agruparPorFuncao(eventos) {
-        const grupos = {};
-        eventos.forEach(ev => {
-            const f = ev.funcao || 'Geral';
-            if (!grupos[f]) grupos[f] = [];
-            grupos[f].push(ev);
-        });
-        return grupos;
-    }
-
+    // MONTA A TABELA MATRICIAL EXATAMENTE IGUAL À FOTO DO EXCEL
     function renderizarAgenda() {
-        const container = document.getElementById('agendaGridContainer');
-        container.innerHTML = '';
-
         const isAdmin = usuarioLogado.role === 'admin';
+        
+        // Renderizar Cabeçalho das Colunas (Dias e Datas)
+        const rowNomes = document.getElementById('rowDiasNomes');
+        const rowDatas = document.getElementById('rowDiasDatas');
+
+        rowNomes.innerHTML = '<th rowspan="2" style="background:#ffff00; width:160px; border:1px solid #000;">COLABORADOR</th>';
+        rowDatas.innerHTML = '';
 
         datasDaSemanaAtual.forEach(diaInfo => {
-            const col = document.createElement('div');
-            col.className = 'day-column';
+            const isEnd = diaInfo.isWeekend;
+            const classText = isEnd ? 'weekend-text' : '';
 
-            const eventosDoDia = agendamentos.filter(ev => {
-                const mesmaData = ev.data === diaInfo.dataISO;
-                return isAdmin ? mesmaData : (mesmaData && ev.usuario.toLowerCase() === usuarioLogado.user.toLowerCase());
+            rowNomes.innerHTML += `<th class="header-yellow ${classText}" style="border:1px solid #000;">${diaInfo.nomeDia}</th>`;
+            rowDatas.innerHTML += `<th class="header-white ${classText}" style="border:1px solid #000;">${diaInfo.dataFormatada}</th>`;
+        });
+
+        // Filtrar Lista de Colaboradores a serem exibidos
+        const tbody = document.getElementById('tbodyMatricial');
+        tbody.innerHTML = '';
+
+        let listaExibicao = usuarios.filter(u => u.role !== 'admin');
+        if (!isAdmin) {
+            listaExibicao = listaExibicao.filter(u => u.user.toLowerCase() === usuarioLogado.user.toLowerCase());
+        }
+
+        if (listaExibicao.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="padding:15px; font-weight:bold;">Nenhum colaborador cadastrado.</td></tr>';
+            return;
+        }
+
+        // Para cada colaborador, cria uma linha na tabela
+        listaExibicao.forEach(colab => {
+            const tr = document.createElement('tr');
+
+            // Célula Amarela com Nome do Colaborador
+            let tdUser = `<td class="col-colaborador">${colab.user}</td>`;
+            tr.innerHTML = tdUser;
+
+            // Preenche cada dia da semana para esse colaborador
+            datasDaSemanaAtual.forEach(diaInfo => {
+                const evsDoDia = agendamentos.filter(ev => ev.usuario.toLowerCase() === colab.user.toLowerCase() && ev.data === diaInfo.dataISO);
+
+                let cellHTML = '';
+
+                evsDoDia.forEach(ev => {
+                    const labelTexto = ev.funcao ? `${ev.funcao}: ${ev.local}` : ev.local;
+                    
+                    const acoesAdmin = isAdmin ? `
+                        <div class="cell-task-actions">
+                            <button class="btn-copy" onclick="duplicarEvento(${ev.id})" title="Copiar">📋</button>
+                            <button class="btn-danger" onclick="deletarEvento(${ev.id})" title="Excluir">✕</button>
+                        </div>
+                    ` : '';
+
+                    cellHTML += `
+                        <div class="cell-task-item">
+                            ${labelTexto}
+                            ${acoesAdmin}
+                        </div>
+                    `;
+                });
+
+                tr.innerHTML += `<td style="border:1px solid #000; background:${diaInfo.isWeekend ? '#f1f5f9' : '#ffffff'};">${cellHTML}</td>`;
             });
 
-            let htmlConteudo = '';
-
-            if (eventosDoDia.length === 0) {
-                htmlConteudo = '<p style="color:#475569; font-size:11px; text-align:center; margin-top:15px;">Sem tarefas</p>';
-            } else {
-                const grupos = agruparPorFuncao(eventosDoDia);
-
-                for (const [funcaoNome, listaEvs] of Object.entries(grupos)) {
-                    htmlConteudo += `<div class="role-group"><span class="role-group-title">🛠️ ${funcaoNome}</span>`;
-
-                    listaEvs.forEach(ev => {
-                        const acoesAdmin = isAdmin ? `
-                            <div>
-                                <button class="btn-copy" onclick="duplicarEvento(${ev.id})" title="Copiar">📋</button>
-                                <button class="btn-danger" onclick="deletarEvento(${ev.id})" title="Excluir">✕</button>
-                            </div>
-                        ` : '';
-
-                        const tagUsuario = isAdmin ? `<span class="event-user">👤 ${ev.usuario}</span>` : '';
-
-                        htmlConteudo += `
-                            <div class="event-card ${isAdmin ? 'admin-view' : ''}">
-                                <div class="event-header">
-                                    <span class="event-location">📍 ${ev.local}</span>
-                                    ${acoesAdmin}
-                                </div>
-                                <div class="event-desc">${ev.desc || ''}</div>
-                                ${tagUsuario}
-                            </div>
-                        `;
-                    });
-
-                    htmlConteudo += `</div>`;
-                }
-            }
-
-            col.innerHTML = `
-                <div class="day-title">${diaInfo.nomeDia.split('-')[0]}</div>
-                <div class="day-date">${diaInfo.dataFormatada}</div>
-                ${htmlConteudo}
-            `;
-
-            container.appendChild(col);
+            tbody.appendChild(tr);
         });
     }
 
     function exportarPDF() {
-        const tituloAntigo = document.getElementById('tituloAgendaPDF').innerText;
-        const inicioSemana = datasDaSemanaAtual[0].dataFormatada;
-        const fimSemana = datasDaSemanaAtual[6].dataFormatada;
-        
-        document.getElementById('tituloAgendaPDF').innerText = `📅 Agenda Semanal (${inicioSemana} a ${fimSemana}) - ${usuarioLogado.user}`;
-        
         window.print();
-        
-        document.getElementById('tituloAgendaPDF').innerText = tituloAntigo;
     }
 
     function salvarDados() {
