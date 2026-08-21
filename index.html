@@ -23,13 +23,15 @@
         /* Formulários e Inputs */
         .form-group { margin-bottom: 15px; }
         label { display: block; font-size: 11px; font-weight: bold; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px; }
-        input[type="text"], input[type="password"], input[type="date"], input[type="time"], select, textarea { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #475569; border-radius: 8px; color: #fff; font-size: 14px; outline: none; }
+        input[type="text"], input[type="password"], input[type="date"], select, textarea { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #475569; border-radius: 8px; color: #fff; font-size: 14px; outline: none; }
         input:focus, select:focus, textarea:focus { border-color: #38bdf8; }
         
         /* Checkboxes Dias da Semana */
-        .checkbox-days { display: flex; flex-wrap: wrap; gap: 8px; background: #0f172a; padding: 10px; border-radius: 8px; border: 1px solid #475569; }
+        .checkbox-days-wrapper { background: #0f172a; padding: 10px; border-radius: 8px; border: 1px solid #475569; }
+        .quick-select-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed #334155; font-size: 12px; color: #38bdf8; font-weight: bold; cursor: pointer; }
+        .checkbox-days { display: flex; flex-wrap: wrap; gap: 8px; }
         .checkbox-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #f8fafc; cursor: pointer; width: 48%; }
-        .checkbox-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: #38bdf8; cursor: pointer; }
+        .checkbox-item input[type="checkbox"], .quick-select-bar input[type="checkbox"] { width: 18px; height: 18px; accent-color: #38bdf8; cursor: pointer; }
 
         /* Botões */
         button { border: none; padding: 12px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
@@ -67,11 +69,14 @@
         .day-title { color: #38bdf8; font-weight: bold; text-align: center; margin-bottom: 2px; font-size: 13px; }
         .day-date { color: #64748b; font-size: 11px; text-align: center; margin-bottom: 8px; border-bottom: 1px dashed #334155; padding-bottom: 4px; }
         
+        /* Grupos de Função e Cards */
+        .role-group { margin-bottom: 10px; border-top: 1px solid #334155; padding-top: 6px; }
+        .role-group-title { font-size: 10px; text-transform: uppercase; color: #f59e0b; font-weight: bold; margin-bottom: 4px; display: block; }
+        
         /* Card de Evento/Tarefa */
-        .event-card { background: #1e293b; border-left: 4px solid #38bdf8; border-radius: 6px; padding: 8px; margin-bottom: 8px; font-size: 12px; position: relative; }
+        .event-card { background: #1e293b; border-left: 4px solid #38bdf8; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 12px; position: relative; }
         .event-card.admin-view { border-left-color: #f59e0b; }
         .event-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-        .event-time { font-weight: bold; color: #e2e8f0; }
         .event-location { color: #38bdf8; font-weight: bold; margin-bottom: 4px; display: block; word-break: break-word; }
         .event-desc { color: #94a3b8; font-size: 11px; word-break: break-word; }
         .event-user { font-size: 10px; background: #334155; color: #f8fafc; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px; }
@@ -85,19 +90,20 @@
         @media (max-width: 768px) {
             body { padding: 6px; }
             .card { padding: 12px; }
-            .agenda-grid { grid-template-columns: 1fr; } /* No celular os dias aparecem empilhados */
+            .agenda-grid { grid-template-columns: 1fr; }
             .checkbox-item { width: 100%; }
             .week-picker-bar input[type="date"] { width: 100%; }
             .admin-form-row { grid-template-columns: 1fr; }
         }
 
         /* ESTILOS PARA GERAR O PDF */
-        .pdf-export-container { background: #ffffff !important; color: #000000 !important; padding: 20px; font-family: Arial, sans-serif; }
-        .pdf-export-container h2 { color: #0284c7; border-bottom: 2px solid #0284c7; padding-bottom: 5px; font-size: 18px; margin-bottom: 10px; }
-        .pdf-export-container .pdf-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; font-size: 10px; }
-        .pdf-export-container .pdf-day { border: 1px solid #cbd5e1; padding: 5px; border-radius: 4px; background: #f8fafc; min-height: 200px; }
-        .pdf-export-container .pdf-day-title { font-weight: bold; text-align: center; color: #0f172a; border-bottom: 1px solid #cbd5e1; padding-bottom: 2px; margin-bottom: 4px; }
-        .pdf-export-container .pdf-event { background: #ffffff; border-left: 3px solid #0284c7; padding: 4px; margin-bottom: 4px; border-radius: 2px; font-size: 9px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        #pdf-render-area { background: #ffffff !important; color: #000000 !important; padding: 20px; font-family: Arial, sans-serif; }
+        #pdf-render-area h2 { color: #0284c7; border-bottom: 2px solid #0284c7; padding-bottom: 5px; font-size: 18px; margin-bottom: 10px; }
+        #pdf-render-area .pdf-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; font-size: 10px; }
+        #pdf-render-area .pdf-day { border: 1px solid #cbd5e1; padding: 5px; border-radius: 4px; background: #f8fafc; min-height: 200px; }
+        #pdf-render-area .pdf-day-title { font-weight: bold; text-align: center; color: #0f172a; border-bottom: 1px solid #cbd5e1; padding-bottom: 2px; margin-bottom: 4px; }
+        #pdf-render-area .pdf-role-title { font-size: 9px; font-weight: bold; color: #d97706; margin-top: 6px; margin-bottom: 2px; text-transform: uppercase; }
+        #pdf-render-area .pdf-event { background: #ffffff; border-left: 3px solid #0284c7; padding: 4px; margin-bottom: 4px; border-radius: 2px; font-size: 9px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
@@ -162,6 +168,10 @@
                         <input type="text" id="newUsername" placeholder="Ex: joao" required>
                     </div>
                     <div class="form-group">
+                        <label>Função Padrão</label>
+                        <input type="text" id="newUserRole" placeholder="Ex: Técnico, Suporte, Vendas" required>
+                    </div>
+                    <div class="form-group">
                         <label>Senha</label>
                         <input type="password" id="newPassword" placeholder="Senha" required>
                     </div>
@@ -178,7 +188,7 @@
                     <div class="admin-form-row">
                         <div class="form-group">
                             <label>Colaborador 1 *</label>
-                            <select id="scheduleUserSelect1" class="user-select-box" required>
+                            <select id="scheduleUserSelect1" class="user-select-box" onchange="atualizarFuncaoAuto(1)" required>
                                 <option value="">Carregando...</option>
                             </select>
                         </div>
@@ -189,19 +199,25 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Horário</label>
-                            <input type="time" id="scheduleTime" required>
+                            <label>Função / Cargo no Evento</label>
+                            <input type="text" id="scheduleRole" placeholder="Ex: Manutenção, Suporte" required>
                         </div>
                         <div class="form-group">
-                            <label>Cliente / Local (Função)</label>
-                            <input type="text" id="scheduleLocation" placeholder="Ex: Cliente XYZ / Suporte" required list="clientesDataList">
+                            <label>Cliente / Local</label>
+                            <input type="text" id="scheduleLocation" placeholder="Ex: Cliente XYZ" required list="clientesDataList">
                             <datalist id="clientesDataList"></datalist>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label>Selecione os Dias da Semana *</label>
-                        <div class="checkbox-days" id="checkboxDaysContainer"></div>
+                        <div class="checkbox-days-wrapper">
+                            <label class="quick-select-bar">
+                                <input type="checkbox" id="selectAllWeekdays" onchange="toggleSegundaSexta(this.checked)">
+                                ⚡ Selecionar Semana Inteira (Segunda a Sexta)
+                            </label>
+                            <div class="checkbox-days" id="checkboxDaysContainer"></div>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -226,7 +242,7 @@
                 </div>
             </div>
 
-            <h3>📅 Agenda Semanal</h3>
+            <h3>📅 Agenda Semanal (Organizada por Função)</h3>
             <div class="agenda-grid" id="agendaGridContainer"></div>
         </div>
 
@@ -234,11 +250,14 @@
 
 </div>
 
+<!-- CONTAINER OCULTO PARA GERAR O PDF DE FORMA CONFIÁVEL -->
+<div id="pdf-render-wrapper" style="position: absolute; left: -9999px; top: -9999px;"></div>
+
 <script>
     const DIAS_NOMES = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"];
     
     let usuarios = JSON.parse(localStorage.getItem('app_usuarios')) || [
-        { user: 'admin', pass: 'Rafa180993', role: 'admin' }
+        { user: 'admin', pass: 'Rafa180993', role: 'admin', funcao: 'Administrador' }
     ];
 
     let clientes = JSON.parse(localStorage.getItem('app_clientes')) || [];
@@ -319,7 +338,8 @@
             datasDaSemanaAtual.push({
                 nomeDia: DIAS_NOMES[i],
                 dataISO: iso,
-                dataFormatada: dataFmt
+                dataFormatada: dataFmt,
+                isWeekday: i < 5 // Segunda a Sexta
             });
         }
 
@@ -336,20 +356,48 @@
         if (!container) return;
         container.innerHTML = '';
 
+        document.getElementById('selectAllWeekdays').checked = false;
+
         datasDaSemanaAtual.forEach(diaInfo => {
             const label = document.createElement('label');
             label.className = 'checkbox-item';
             label.innerHTML = `
-                <input type="checkbox" name="selectedDay" value="${diaInfo.dataISO}">
+                <input type="checkbox" name="selectedDay" value="${diaInfo.dataISO}" data-weekday="${diaInfo.isWeekday}" onchange="verificarToggleSemana()">
                 ${diaInfo.nomeDia.split('-')[0]} (${diaInfo.dataFormatada})
             `;
             container.appendChild(label);
         });
     }
 
+    function toggleSegundaSexta(checked) {
+        const checkboxes = document.querySelectorAll('input[name="selectedDay"]');
+        checkboxes.forEach(cb => {
+            if (cb.getAttribute('data-weekday') === 'true') {
+                cb.checked = checked;
+            }
+        });
+    }
+
+    function verificarToggleSemana() {
+        const checkboxesWeekdays = document.querySelectorAll('input[name="selectedDay"][data-weekday="true"]');
+        const todosMarcados = Array.from(checkboxesWeekdays).every(cb => cb.checked);
+        document.getElementById('selectAllWeekdays').checked = todosMarcados;
+    }
+
+    function atualizarFuncaoAuto(colabIndex) {
+        if (colabIndex === 1) {
+            const username = document.getElementById('scheduleUserSelect1').value;
+            const u = usuarios.find(user => user.user === username);
+            if (u && u.funcao) {
+                document.getElementById('scheduleRole').value = u.funcao;
+            }
+        }
+    }
+
     function cadastrarUsuario(e) {
         e.preventDefault();
         const u = document.getElementById('newUsername').value.trim();
+        const f = document.getElementById('newUserRole').value.trim();
         const p = document.getElementById('newPassword').value.trim();
 
         if (usuarios.some(user => user.user.toLowerCase() === u.toLowerCase())) {
@@ -357,11 +405,12 @@
             return;
         }
 
-        usuarios.push({ user: u, pass: p, role: 'user' });
+        usuarios.push({ user: u, pass: p, role: 'user', funcao: f || 'Geral' });
         salvarDados();
         alert(`✅ Colaborador "${u}" criado com sucesso!`);
         
         document.getElementById('newUsername').value = '';
+        document.getElementById('newUserRole').value = '';
         document.getElementById('newPassword').value = '';
         atualizarSelectUsuarios();
         renderizarListasAdmin();
@@ -387,7 +436,6 @@
     }
 
     function renderizarListasAdmin() {
-        // Renderizar lista de Colaboradores na aba suspensa
         const containerColab = document.getElementById('listaColaboradoresAdmin');
         containerColab.innerHTML = '';
         
@@ -399,14 +447,13 @@
                 const item = document.createElement('div');
                 item.className = 'manage-list-item';
                 item.innerHTML = `
-                    <span>👤 <b>${colab.user}</b></span>
+                    <span>👤 <b>${colab.user}</b> <small style="color:#38bdf8;">(${colab.funcao || 'Sem Função'})</small></span>
                     <button class="btn-danger" onclick="excluirUsuario('${colab.user}')">🗑️ Excluir</button>
                 `;
                 containerColab.appendChild(item);
             });
         }
 
-        // Renderizar lista de Clientes na aba suspensa e no datalist
         const containerClientes = document.getElementById('listaClientesAdmin');
         const datalist = document.getElementById('clientesDataList');
         containerClientes.innerHTML = '';
@@ -416,7 +463,6 @@
             containerClientes.innerHTML = '<p style="font-size:12px; color:#64748b;">Nenhum cliente cadastrado ainda.</p>';
         } else {
             clientes.forEach(cli => {
-                // Preenche a lista com botão excluir
                 const item = document.createElement('div');
                 item.className = 'manage-list-item';
                 item.innerHTML = `
@@ -425,7 +471,6 @@
                 `;
                 containerClientes.appendChild(item);
 
-                // Preenche o datalist para auto-completar no campo de texto
                 const opt = document.createElement('option');
                 opt.value = cli;
                 datalist.appendChild(opt);
@@ -444,7 +489,7 @@
             usuarios.forEach(user => {
                 const option = document.createElement('option');
                 option.value = user.user;
-                option.innerText = user.user + (user.role === 'admin' ? ' (Admin)' : '');
+                option.innerText = user.user + (user.role === 'admin' ? ' (Admin)' : ` - ${user.funcao || 'Geral'}`);
                 select.appendChild(option);
             });
         });
@@ -454,7 +499,7 @@
         e.preventDefault();
         const u1 = document.getElementById('scheduleUserSelect1').value;
         const u2 = document.getElementById('scheduleUserSelect2').value;
-        const hora = document.getElementById('scheduleTime').value;
+        const funcao = document.getElementById('scheduleRole').value.trim();
         const local = document.getElementById('scheduleLocation').value.trim();
         const desc = document.getElementById('scheduleDesc').value.trim();
 
@@ -471,7 +516,6 @@
             return;
         }
 
-        // Se o cliente não existir na lista global de clientes, cadastra
         if (local && !clientes.includes(local)) {
             clientes.push(local);
         }
@@ -488,8 +532,8 @@
                 const novoEvento = {
                     id: Date.now() + Math.random(),
                     usuario: user,
+                    funcao: funcao || 'Geral',
                     data: dataIso,
-                    hora: hora,
                     local: local,
                     desc: desc
                 };
@@ -504,6 +548,7 @@
         document.getElementById('scheduleLocation').value = '';
         document.getElementById('scheduleDesc').value = '';
         document.querySelectorAll('input[name="selectedDay"]').forEach(cb => cb.checked = false);
+        document.getElementById('selectAllWeekdays').checked = false;
 
         renderizarListasAdmin();
         renderizarAgenda();
@@ -539,6 +584,16 @@
         }
     }
 
+    function agruparPorFuncao(eventos) {
+        const grupos = {};
+        eventos.forEach(ev => {
+            const f = ev.funcao || 'Geral';
+            if (!grupos[f]) grupos[f] = [];
+            grupos[f].push(ev);
+        });
+        return grupos;
+    }
+
     function renderizarAgenda() {
         const container = document.getElementById('agendaGridContainer');
         container.innerHTML = '';
@@ -549,42 +604,51 @@
             const col = document.createElement('div');
             col.className = 'day-column';
 
-            let htmlEventos = '';
-
             const eventosDoDia = agendamentos.filter(ev => {
                 const mesmaData = ev.data === diaInfo.dataISO;
                 return isAdmin ? mesmaData : (mesmaData && ev.usuario.toLowerCase() === usuarioLogado.user.toLowerCase());
             });
 
-            eventosDoDia.sort((a, b) => a.hora.localeCompare(b.hora));
+            let htmlConteudo = '';
 
-            eventosDoDia.forEach(ev => {
-                const acoesAdmin = isAdmin ? `
-                    <div>
-                        <button class="btn-copy" onclick="duplicarEvento(${ev.id})" title="Copiar">📋</button>
-                        <button class="btn-danger" onclick="deletarEvento(${ev.id})" title="Excluir">✕</button>
-                    </div>
-                ` : '';
+            if (eventosDoDia.length === 0) {
+                htmlConteudo = '<p style="color:#475569; font-size:11px; text-align:center; margin-top:15px;">Sem tarefas</p>';
+            } else {
+                const grupos = agruparPorFuncao(eventosDoDia);
 
-                const tagUsuario = isAdmin ? `<span class="event-user">👤 ${ev.usuario}</span>` : '';
+                for (const [funcaoNome, listaEvs] of Object.entries(grupos)) {
+                    htmlConteudo += `<div class="role-group"><span class="role-group-title">🛠️ ${funcaoNome}</span>`;
 
-                htmlEventos += `
-                    <div class="event-card ${isAdmin ? 'admin-view' : ''}">
-                        <div class="event-header">
-                            <span class="event-time">⏰ ${ev.hora}</span>
-                            ${acoesAdmin}
-                        </div>
-                        <span class="event-location">📍 ${ev.local}</span>
-                        <div class="event-desc">${ev.desc || ''}</div>
-                        ${tagUsuario}
-                    </div>
-                `;
-            });
+                    listaEvs.forEach(ev => {
+                        const acoesAdmin = isAdmin ? `
+                            <div>
+                                <button class="btn-copy" onclick="duplicarEvento(${ev.id})" title="Copiar">📋</button>
+                                <button class="btn-danger" onclick="deletarEvento(${ev.id})" title="Excluir">✕</button>
+                            </div>
+                        ` : '';
+
+                        const tagUsuario = isAdmin ? `<span class="event-user">👤 ${ev.usuario}</span>` : '';
+
+                        htmlConteudo += `
+                            <div class="event-card ${isAdmin ? 'admin-view' : ''}">
+                                <div class="event-header">
+                                    <span class="event-location">📍 ${ev.local}</span>
+                                    ${acoesAdmin}
+                                </div>
+                                <div class="event-desc">${ev.desc || ''}</div>
+                                ${tagUsuario}
+                            </div>
+                        `;
+                    });
+
+                    htmlConteudo += `</div>`;
+                }
+            }
 
             col.innerHTML = `
                 <div class="day-title">${diaInfo.nomeDia.split('-')[0]}</div>
                 <div class="day-date">${diaInfo.dataFormatada}</div>
-                ${htmlEventos || '<p style="color:#475569; font-size:11px; text-align:center; margin-top:15px;">Sem tarefas</p>'}
+                ${htmlConteudo}
             `;
 
             container.appendChild(col);
@@ -594,17 +658,7 @@
     async function exportarPDF() {
         const isAdmin = usuarioLogado.role === 'admin';
         const tituloPDF = `Agenda Semanal (${datasDaSemanaAtual[0].dataFormatada} - ${datasDaSemanaAtual[6].dataFormatada})`;
-        const subTitulo = isAdmin ? 'Relatório Geral (Todos os Colaboradores)' : `Colaborador: ${usuarioLogado.user}`;
-
-        const element = document.createElement('div');
-        element.className = 'pdf-export-container';
-        
-        element.style.position = 'fixed';
-        element.style.left = '0';
-        element.style.top = '0';
-        element.style.width = '1000px'; 
-        element.style.zIndex = '-9999';
-        element.style.opacity = '1';
+        const subTitulo = isAdmin ? 'Relatório Geral (Todos os Colaboradores Organizados por Função)' : `Colaborador: ${usuarioLogado.user}`;
 
         let gridDiasHTML = '';
 
@@ -614,41 +668,49 @@
                 return isAdmin ? mesmaData : (mesmaData && ev.usuario.toLowerCase() === usuarioLogado.user.toLowerCase());
             });
 
-            eventosDoDia.sort((a, b) => a.hora.localeCompare(b.hora));
-
             let evHTML = '';
-            eventosDoDia.forEach(ev => {
-                evHTML += `
-                    <div class="pdf-event">
-                        <b>${ev.hora}</b> - ${ev.local}<br>
-                        ${ev.desc ? `<i style="color:#475569;">${ev.desc}</i><br>` : ''}
-                        ${isAdmin ? `<span style="color:#0284c7; font-weight:bold;">[${ev.usuario}]</span>` : ''}
-                    </div>
-                `;
-            });
+
+            if (eventosDoDia.length === 0) {
+                evHTML = '<p style="color:#94a3b8; font-size:8px; text-align:center;">Sem tarefas</p>';
+            } else {
+                const grupos = agruparPorFuncao(eventosDoDia);
+                for (const [funcaoNome, listaEvs] of Object.entries(grupos)) {
+                    evHTML += `<div class="pdf-role-title">🛠️ ${funcaoNome}</div>`;
+                    listaEvs.forEach(ev => {
+                        evHTML += `
+                            <div class="pdf-event">
+                                <b>${ev.local}</b><br>
+                                ${ev.desc ? `<i style="color:#475569;">${ev.desc}</i><br>` : ''}
+                                ${isAdmin ? `<span style="color:#0284c7; font-weight:bold;">[${ev.usuario}]</span>` : ''}
+                            </div>
+                        `;
+                    });
+                }
+            }
 
             gridDiasHTML += `
                 <div class="pdf-day">
                     <div class="pdf-day-title">${diaInfo.nomeDia.split('-')[0]}<br>${diaInfo.dataFormatada}</div>
-                    ${evHTML || '<p style="color:#94a3b8; font-size:8px; text-align:center;">Sem tarefas</p>'}
+                    ${evHTML}
                 </div>
             `;
         });
 
-        element.innerHTML = `
-            <h2>📅 ${tituloPDF}</h2>
-            <p style="margin-bottom: 12px; font-size: 11px; color: #475569;"><b>${subTitulo}</b></p>
-            <div class="pdf-grid">
-                ${gridDiasHTML}
+        const wrapper = document.getElementById('pdf-render-wrapper');
+        wrapper.innerHTML = `
+            <div id="pdf-render-area" style="width: 1000px;">
+                <h2>📅 ${tituloPDF}</h2>
+                <p style="margin-bottom: 12px; font-size: 11px; color: #475569;"><b>${subTitulo}</b></p>
+                <div class="pdf-grid">
+                    ${gridDiasHTML}
+                </div>
             </div>
         `;
 
-        document.body.appendChild(element);
-
-        await new Promise(resolve => setTimeout(resolve, 300));
+        const element = document.getElementById('pdf-render-area');
 
         const opt = {
-            margin:       8,
+            margin:       [8, 8, 8, 8],
             filename:     `Agenda_${usuarioLogado.user}_${datasDaSemanaAtual[0].dataISO}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2, useCORS: true, logging: false },
@@ -660,7 +722,7 @@
         } catch (err) {
             alert("Erro ao gerar PDF: " + err.message);
         } finally {
-            document.body.removeChild(element);
+            wrapper.innerHTML = '';
         }
     }
 
