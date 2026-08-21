@@ -94,7 +94,7 @@
             .admin-form-row { grid-template-columns: 1fr; }
         }
 
-        /* ESTILOS DE IMPRESSÃO NATIIVA (GERAÇÃO PERFEITA DE PDF) */
+        /* ESTILOS DE IMPRESSÃO NATIVA (GERAÇÃO PERFEITA DE PDF) */
         @media print {
             @page { size: landscape; margin: 8mm; }
             body { background: #ffffff !important; color: #000000 !important; padding: 0 !important; }
@@ -262,6 +262,9 @@
 <script>
     const DIAS_NOMES = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"];
     
+    // ENDEREÇO DA SUA WEB APP DO GOOGLE APPS SCRIPT
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz9zeHGoDDk8Tch7gBhS355k4B8CXV8BiRhZU2AVOovsnoWuwyp8phHhHyY4oZ-vhwh5Q/exec';
+
     let usuarios = JSON.parse(localStorage.getItem('app_usuarios')) || [
         { user: 'admin', pass: 'Rafa180993', role: 'admin', funcao: 'Administrador' }
     ];
@@ -531,7 +534,7 @@
             listaUsuarios.push(u2);
         }
 
-        let totalLancamentos = 0;
+        let novosLancamentos = [];
 
         diasSelecionados.forEach(dataIso => {
             listaUsuarios.forEach(user => {
@@ -544,12 +547,27 @@
                     desc: desc
                 };
                 agendamentos.push(novoEvento);
-                totalLancamentos++;
+                novosLancamentos.push(novoEvento);
             });
         });
 
         salvarDados();
-        alert(`📌 ${totalLancamentos} agendamento(s) salvo(s) com sucesso!`);
+
+        // Envio direto para o Google Sheets via API do Apps Script
+        if (GOOGLE_SCRIPT_URL) {
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(novosLancamentos)
+            }).then(() => {
+                console.log('Dados salvos na planilha Google com sucesso!');
+            }).catch(err => {
+                console.error('Erro ao enviar para o Google Sheets:', err);
+            });
+        }
+
+        alert(`📌 ${novosLancamentos.length} agendamento(s) salvo(s) na agenda e sincronizado(s) com a planilha!`);
 
         document.getElementById('scheduleLocation').value = '';
         document.getElementById('scheduleDesc').value = '';
@@ -575,7 +593,18 @@
 
             agendamentos.push(eventoDuplicado);
             salvarDados();
-            alert('✅ Evento copiado com sucesso!');
+
+            // Sincroniza duplicados também com a planilha Google
+            if (GOOGLE_SCRIPT_URL) {
+                fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify([eventoDuplicado])
+                });
+            }
+
+            alert('✅ Evento copiado e sincronizado com a planilha!');
             
             atualizarSemanaPorData(novaData.trim());
             document.getElementById('weekPickerDate').value = novaData.trim();
