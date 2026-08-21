@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agenda Semanal Corporativa</title>
-    <!-- Biblioteca HTML2PDF para exportação em PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #0f172a; color: #f8fafc; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 12px; }
@@ -94,6 +92,26 @@
             .checkbox-item { width: 100%; }
             .week-picker-bar input[type="date"] { width: 100%; }
             .admin-form-row { grid-template-columns: 1fr; }
+        }
+
+        /* ESTILOS DE IMPRESSÃO NATIIVA (GERAÇÃO PERFEITA DE PDF) */
+        @media print {
+            @page { size: landscape; margin: 8mm; }
+            body { background: #ffffff !important; color: #000000 !important; padding: 0 !important; }
+            .container { max-width: 100% !important; width: 100% !important; }
+            #login-screen, #admin-panel, .header, .week-picker-bar, .btn-copy, .btn-danger, button { display: none !important; }
+            .card { background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
+            h3 { color: #0284c7 !important; border-bottom: 2px solid #0284c7 !important; font-size: 18px !important; margin-bottom: 12px !important; }
+            .agenda-grid { display: table !important; width: 100% !important; table-layout: fixed !important; margin-top: 0 !important; }
+            .day-column { display: table-cell !important; background: #f8fafc !important; border: 1px solid #cbd5e1 !important; vertical-align: top !important; padding: 6px !important; }
+            .day-title { color: #0f172a !important; font-size: 12px !important; }
+            .day-date { color: #475569 !important; border-bottom: 1px solid #cbd5e1 !important; }
+            .role-group { border-top: 1px solid #cbd5e1 !important; }
+            .role-group-title { color: #d97706 !important; font-size: 10px !important; }
+            .event-card { background: #ffffff !important; border-left: 3px solid #0284c7 !important; border-top: 1px solid #e2e8f0 !important; border-right: 1px solid #e2e8f0 !important; border-bottom: 1px solid #e2e8f0 !important; color: #000 !important; padding: 5px !important; margin-bottom: 4px !important; }
+            .event-location { color: #0f172a !important; font-size: 11px !important; }
+            .event-desc { color: #475569 !important; font-size: 10px !important; }
+            .event-user { background: #e2e8f0 !important; color: #0284c7 !important; font-weight: bold !important; }
         }
     </style>
 </head>
@@ -233,7 +251,7 @@
                 </div>
             </div>
 
-            <h3>📅 Agenda Semanal (Organizada por Função)</h3>
+            <h3 id="tituloAgendaPDF">📅 Agenda Semanal (Organizada por Função)</h3>
             <div class="agenda-grid" id="agendaGridContainer"></div>
         </div>
 
@@ -643,93 +661,16 @@
         });
     }
 
-    async function exportarPDF() {
-        const isAdmin = usuarioLogado.role === 'admin';
-        const tituloPDF = `Agenda Semanal (${datasDaSemanaAtual[0].dataFormatada} - ${datasDaSemanaAtual[6].dataFormatada})`;
-        const subTitulo = isAdmin ? 'Relatório Geral (Todos os Colaboradores Organizados por Função)' : `Colaborador: ${usuarioLogado.user}`;
-
-        // Cria a estrutura HTML estilizada inteiramente inline para evitar incompatibilidades de CSS no canvas
-        let gridDiasHTML = '';
-
-        datasDaSemanaAtual.forEach(diaInfo => {
-            const eventosDoDia = agendamentos.filter(ev => {
-                const mesmaData = ev.data === diaInfo.dataISO;
-                return isAdmin ? mesmaData : (mesmaData && ev.usuario.toLowerCase() === usuarioLogado.user.toLowerCase());
-            });
-
-            let evHTML = '';
-
-            if (eventosDoDia.length === 0) {
-                evHTML = '<p style="color:#94a3b8; font-size:8px; text-align:center; margin-top:10px;">Sem tarefas</p>';
-            } else {
-                const grupos = agruparPorFuncao(eventosDoDia);
-                for (const [funcaoNome, listaEvs] of Object.entries(grupos)) {
-                    evHTML += `<div style="font-size:9px; font-weight:bold; color:#d97706; margin-top:6px; margin-bottom:2px; text-transform:uppercase; border-bottom:1px solid #e2e8f0;">🛠️ ${funcaoNome}</div>`;
-                    listaEvs.forEach(ev => {
-                        evHTML += `
-                            <div style="background:#ffffff; border-left:3px solid #0284c7; padding:4px; margin-bottom:4px; border-radius:2px; font-size:9px; box-shadow:0 1px 2px rgba(0,0,0,0.1);">
-                                <b style="color:#0f172a;">📍 ${ev.local}</b><br>
-                                ${ev.desc ? `<i style="color:#475569; font-size:8px;">${ev.desc}</i><br>` : ''}
-                                ${isAdmin ? `<span style="color:#0284c7; font-weight:bold; font-size:8px;">[👤 ${ev.usuario}]</span>` : ''}
-                            </div>
-                        `;
-                    });
-                }
-            }
-
-            gridDiasHTML += `
-                <div style="border:1px solid #cbd5e1; padding:5px; border-radius:4px; background:#f8fafc; min-height:180px;">
-                    <div style="font-weight:bold; text-align:center; color:#0f172a; border-bottom:1px solid #cbd5e1; padding-bottom:2px; margin-bottom:4px; font-size:10px;">
-                        ${diaInfo.nomeDia.split('-')[0]}<br>${diaInfo.dataFormatada}
-                    </div>
-                    ${evHTML}
-                </div>
-            `;
-        });
-
-        // Container montado diretamente no DOM sem ocultação de z-index
-        const pdfContainer = document.createElement('div');
-        pdfContainer.id = 'pdf-export-element';
-        pdfContainer.style.width = '1050px';
-        pdfContainer.style.padding = '20px';
-        pdfContainer.style.backgroundColor = '#ffffff';
-        pdfContainer.style.color = '#000000';
-        pdfContainer.style.fontFamily = 'Arial, sans-serif';
-        pdfContainer.style.position = 'fixed';
-        pdfContainer.style.top = '0';
-        pdfContainer.style.left = '0';
-        pdfContainer.style.zIndex = '99999';
-
-        pdfContainer.innerHTML = `
-            <h2 style="color:#0284c7; border-bottom:2px solid #0284c7; padding-bottom:5px; font-size:18px; margin-bottom:6px;">📅 ${tituloPDF}</h2>
-            <p style="margin-bottom:12px; font-size:11px; color:#475569;"><b>${subTitulo}</b></p>
-            <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:5px;">
-                ${gridDiasHTML}
-            </div>
-        `;
-
-        document.body.appendChild(pdfContainer);
-
-        // Dá tempo ao navegador para renderizar os elementos na tela
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        const opt = {
-            margin:       [5, 5, 5, 5],
-            filename:     `Agenda_${usuarioLogado.user}_${datasDaSemanaAtual[0].dataISO}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, logging: false },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
-        };
-
-        try {
-            await html2pdf().set(opt).from(pdfContainer).save();
-        } catch (err) {
-            alert("Erro ao gerar PDF: " + err.message);
-        } finally {
-            if (document.body.contains(pdfContainer)) {
-                document.body.removeChild(pdfContainer);
-            }
-        }
+    function exportarPDF() {
+        const tituloAntigo = document.getElementById('tituloAgendaPDF').innerText;
+        const inicioSemana = datasDaSemanaAtual[0].dataFormatada;
+        const fimSemana = datasDaSemanaAtual[6].dataFormatada;
+        
+        document.getElementById('tituloAgendaPDF').innerText = `📅 Agenda Semanal (${inicioSemana} a ${fimSemana}) - ${usuarioLogado.user}`;
+        
+        window.print();
+        
+        document.getElementById('tituloAgendaPDF').innerText = tituloAntigo;
     }
 
     function salvarDados() {
